@@ -1975,7 +1975,7 @@ mlx::core::array ToArray(Napi::Env env, const Napi::Value& value) {
 Napi::Value Add(const Napi::CallbackInfo& info) {
   auto env = info.Env();
   if (info.Length() < 2) {
-    Napi::TypeError::New(env, "add expects two arguments")
+    Napi::TypeError::New(env, "add expects two arguments (arrays or scalars)")
         .ThrowAsJavaScriptException();
     return env.Null();
   }
