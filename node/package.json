@@ -7,10 +7,21 @@
   "engines": {
     "node": ">=22"
   },
-  "keywords": ["mlx", "metal", "gpu", "ml", "ai", "apple", "node-addon-api"],
+  "keywords": [
+    "mlx",
+    "metal",
+    "gpu",
+    "ml",
+    "ai",
+    "apple",
+    "node-addon-api"
+  ],
   "files": [
     "index.js",
     "build/Release/mlx.node"
-  ]
+  ],
+  "devDependencies": {
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^24.7.2"
+  }
 }
-

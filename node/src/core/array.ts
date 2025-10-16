@@ -301,13 +301,49 @@ export function ones(
   return MLXArray.fromHandle(addon.ones(normalizeShapeInput(shape), dtype));
 }
 
+/**
+ * Construct an array with the given value.
+ *
+ * Constructs an array of size `shape` filled with `value`.
+ *
+ * @param shape - The shape of the output array.
+ * @param value - Value to fill the array with (scalar number, TypedArray, or MLXArray).
+ * @param dtype - Data type of the output array. If unspecified, inferred from value.
+ * @returns The filled array.
+ *
+ * @example
+ * ```typescript
+ * // Create array filled with scalar
+ * const a = mlx.core.full([2, 3], 5.0);
+ * // a.shape = [2, 3], all elements = 5.0
+ *
+ * // Create array with explicit dtype
+ * const b = mlx.core.full([3], 7.5, 'float64');
+ * // b.dtype = 'float64'
+ * ```
+ */
 export function full(
   shape: readonly number[],
-  value: number,
-  dtype: DType = 'float32',
+  value: number | SupportedTypedArray | MLXArray,
+  dtype?: DType,
 ): MLXArray {
+  // Handle MLXArray values
+  if (value instanceof MLXArray) {
+    return MLXArray.fromHandle(
+      addon.full(normalizeShapeInput(shape), value.toNative(), dtype),
+    );
+  }
+  
+  // Handle TypedArray values
+  if (isTypedArray(value)) {
+    return MLXArray.fromHandle(
+      addon.full(normalizeShapeInput(shape), value, dtype),
+    );
+  }
+  
+  // Handle scalar values
   return MLXArray.fromHandle(
-    addon.full(normalizeShapeInput(shape), value, dtype),
+    addon.full(normalizeShapeInput(shape), value as number, dtype),
   );
 }
 
