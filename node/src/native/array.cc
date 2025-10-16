@@ -1963,8 +1963,9 @@ mlx::core::array ToArray(Napi::Env env, const Napi::Value& value) {
         value.As<Napi::Boolean>().Value() ? 1.0 : 0.0, mlx::core::bool_);
   }
   if (value.IsBigInt()) {
-    return mlx::core::array(
-        value.As<Napi::BigInt>().ToNumber().DoubleValue(), mlx::core::int64);
+    bool lossless = false;
+    int64_t v = value.As<Napi::BigInt>().Int64Value(&lossless);
+    return mlx::core::array(v, mlx::core::int64);
   }
 
   Napi::TypeError::New(env, "Expected array or scalar (number/boolean/bigint)")
