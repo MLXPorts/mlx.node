@@ -1750,45 +1750,88 @@ Napi::Value SwapAxes(const Napi::CallbackInfo& info) {
   return WrapArray(env, tensor);
 }
 
+// Helper to convert scalar or array to mlx::core::array
+mlx::core::array ToArray(Napi::Env env, const Napi::Value& value) {
+  // If it's already an MLX array, unwrap it
+  if (value.IsObject()) {
+    auto obj = value.As<Napi::Object>();
+    auto& data = mlx::node::GetAddonData(env);
+    auto ctor = data.array_constructor.Value();
+    if (!ctor.IsEmpty() && obj.InstanceOf(ctor)) {
+      auto* wrapper = Napi::ObjectWrap<ArrayWrapper>::Unwrap(obj);
+      return wrapper->tensor();
+    }
+  }
+  
+  // Convert scalar to array
+  if (value.IsNumber()) {
+    return mlx::core::array(value.As<Napi::Number>().DoubleValue());
+  }
+  if (value.IsBoolean()) {
+    return mlx::core::array(value.As<Napi::Boolean>().Value() ? 1.0 : 0.0, mlx::core::bool_);
+  }
+  if (value.IsBigInt()) {
+    return mlx::core::array(value.As<Napi::BigInt>().ToNumber().DoubleValue(), mlx::core::int64);
+  }
+  
+  Napi::TypeError::New(env, "Expected array or scalar (number/boolean/bigint)")
+      .ThrowAsJavaScriptException();
+  return mlx::core::array();
+}
+
 Napi::Value Add(const Napi::CallbackInfo& info) {
   auto env = info.Env();
   if (info.Length() < 2) {
-    Napi::TypeError::New(env, "add expects two arrays")
+    Napi::TypeError::New(env, "add expects two arguments")
         .ThrowAsJavaScriptException();
     return env.Null();
   }
-  auto* a = UnwrapArray(env, info[0]);
-  auto* b = UnwrapArray(env, info[1]);
-  if (env.IsExceptionPending() || a == nullptr || b == nullptr) {
+  
+  auto a = ToArray(env, info[0]);
+  if (env.IsExceptionPending()) {
     return env.Null();
   }
+  
+  auto b = ToArray(env, info[1]);
+  if (env.IsExceptionPending()) {
+    return env.Null();
+  }
+  
   auto streamArg = GetStreamArgument(info, 2);
   if (env.IsExceptionPending()) {
     return env.Null();
   }
+  
   auto tensor = std::make_shared<mlx::core::array>(
-      mlx::core::add(a->tensor(), b->tensor(), streamArg));
+      mlx::core::add(a, b, streamArg));
   return WrapArray(env, tensor);
 }
 
 Napi::Value Multiply(const Napi::CallbackInfo& info) {
   auto env = info.Env();
   if (info.Length() < 2) {
-    Napi::TypeError::New(env, "multiply expects two arrays")
+    Napi::TypeError::New(env, "multiply expects two arguments")
         .ThrowAsJavaScriptException();
     return env.Null();
   }
-  auto* a = UnwrapArray(env, info[0]);
-  auto* b = UnwrapArray(env, info[1]);
-  if (env.IsExceptionPending() || a == nullptr || b == nullptr) {
+  
+  auto a = ToArray(env, info[0]);
+  if (env.IsExceptionPending()) {
     return env.Null();
   }
+  
+  auto b = ToArray(env, info[1]);
+  if (env.IsExceptionPending()) {
+    return env.Null();
+  }
+  
   auto streamArg = GetStreamArgument(info, 2);
   if (env.IsExceptionPending()) {
     return env.Null();
   }
+  
   auto tensor = std::make_shared<mlx::core::array>(
-      mlx::core::multiply(a->tensor(), b->tensor(), streamArg));
+      mlx::core::multiply(a, b, streamArg));
   return WrapArray(env, tensor);
 }
 
