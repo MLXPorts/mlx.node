@@ -127,25 +127,34 @@ export function swapaxes(
 
 export interface BinaryOpOptions extends StreamOptions {}
 
+type ScalarOrArray = MLXArray | number | boolean | bigint;
+
+function toNativeScalarOrArray(value: ScalarOrArray): any {
+  if (value instanceof MLXArray) {
+    return toNativeHandle(value);
+  }
+  return value;
+}
+
 function binaryOp(
   name: 'add' | 'multiply',
-  a: MLXArray,
-  b: MLXArray,
+  a: ScalarOrArray,
+  b: ScalarOrArray,
   options?: BinaryOpOptions,
 ): MLXArray {
-  const args: any[] = [toNativeHandle(a), toNativeHandle(b)];
+  const args: any[] = [toNativeScalarOrArray(a), toNativeScalarOrArray(b)];
   appendStreamArg(args, options?.stream);
   const handle = addon[name](...args);
   return MLXArray.fromHandle(handle);
 }
 
-export function add(a: MLXArray, b: MLXArray, options?: BinaryOpOptions): MLXArray {
+export function add(a: ScalarOrArray, b: ScalarOrArray, options?: BinaryOpOptions): MLXArray {
   return binaryOp('add', a, b, options);
 }
 
 export function multiply(
-  a: MLXArray,
-  b: MLXArray,
+  a: ScalarOrArray,
+  b: ScalarOrArray,
   options?: BinaryOpOptions,
 ): MLXArray {
   return binaryOp('multiply', a, b, options);

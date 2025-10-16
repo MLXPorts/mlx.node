@@ -57,12 +57,50 @@ describe('core ops', () => {
     assert.deepEqual(toArray(result), [5, 7, 9]);
   });
 
+  it('add supports scalar + array', () => {
+    const a = 10;
+    const b = array([1, 2, 3], [3, 1]);
+    const result = add(a, b);
+    assert.deepEqual(result.shape, [3, 1]);
+    assert.deepEqual(toArray(result), [11, 12, 13]);
+  });
+
+  it('add supports array + scalar', () => {
+    const a = array([1, 2, 3], [3, 1]);
+    const b = 5;
+    const result = add(a, b);
+    assert.deepEqual(result.shape, [3, 1]);
+    assert.deepEqual(toArray(result), [6, 7, 8]);
+  });
+
+  it('add supports scalar + scalar', () => {
+    const result = add(3, 4);
+    assert.deepEqual(result.shape, []);
+    assert.deepEqual(toArray(result), 7);
+  });
+
   it('multiply performs elementwise product', () => {
     const a = array([1, 2, 3], [3, 1]);
     const b = array([4, 5, 6], [3, 1]);
     const result = multiply(a, b);
     assert.deepEqual(result.shape, [3, 1]);
     assert.deepEqual(toArray(result), [4, 10, 18]);
+  });
+
+  it('multiply supports scalar + array', () => {
+    const a = 2;
+    const b = array([1, 2, 3], [3, 1]);
+    const result = multiply(a, b);
+    assert.deepEqual(result.shape, [3, 1]);
+    assert.deepEqual(toArray(result), [2, 4, 6]);
+  });
+
+  it('multiply supports array + scalar', () => {
+    const a = array([1, 2, 3], [3, 1]);
+    const b = 3;
+    const result = multiply(a, b);
+    assert.deepEqual(result.shape, [3, 1]);
+    assert.deepEqual(toArray(result), [3, 6, 9]);
   });
 
   it('where selects values elementwise', () => {
