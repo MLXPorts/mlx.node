@@ -309,6 +309,9 @@ export function ones(
  * @param shape - The shape of the output array.
  * @param value - Value to fill the array with (scalar number, TypedArray, or MLXArray).
  * @param dtype - Data type of the output array. If unspecified, inferred from value.
+ *   For MLXArray values, preserves the array's dtype when not specified.
+ *   For TypedArray values, infers from the TypedArray type.
+ *   For scalar values, infers int32 for integers or float32 for floats.
  * @returns The filled array.
  *
  * @example
@@ -320,6 +323,11 @@ export function ones(
  * // Create array with explicit dtype
  * const b = mlx.core.full([3], 7.5, 'float64');
  * // b.dtype = 'float64'
+ *
+ * // Array value broadcasting (preserves source dtype)
+ * const arr = mlx.core.array([1, 2], [2], 'int32');
+ * const c = mlx.core.full([3, 2], arr);
+ * // c.dtype = 'int32' (from source array)
  * ```
  */
 export function full(
@@ -327,24 +335,39 @@ export function full(
   value: number | SupportedTypedArray | MLXArray,
   dtype?: DType,
 ): MLXArray {
+  const normalizedShape = normalizeShapeInput(shape);
+
   // Handle MLXArray values
   if (value instanceof MLXArray) {
-    return MLXArray.fromHandle(
-      addon.full(normalizeShapeInput(shape), value.toNative(), dtype),
-    );
+    // Pass dtype only if explicitly provided
+    // C++ implementation preserves source array dtype when dtype is omitted
+    if (dtype !== undefined) {
+      return MLXArray.fromHandle(
+        addon.full(normalizedShape, value.toNative(), dtype),
+      );
+    }
+    return MLXArray.fromHandle(addon.full(normalizedShape, value.toNative()));
   }
 
   // Handle TypedArray values
   if (isTypedArray(value)) {
-    return MLXArray.fromHandle(
-      addon.full(normalizeShapeInput(shape), value, dtype),
-    );
+    // Pass dtype only if explicitly provided
+    // C++ implementation infers from TypedArray type when dtype is omitted
+    if (dtype !== undefined) {
+      return MLXArray.fromHandle(addon.full(normalizedShape, value, dtype));
+    }
+    return MLXArray.fromHandle(addon.full(normalizedShape, value));
   }
 
   // Handle scalar values
-  return MLXArray.fromHandle(
-    addon.full(normalizeShapeInput(shape), value as number, dtype),
-  );
+  // Pass dtype only if explicitly provided
+  // C++ implementation infers from scalar value when dtype is omitted
+  if (dtype !== undefined) {
+    return MLXArray.fromHandle(
+      addon.full(normalizedShape, value as number, dtype),
+    );
+  }
+  return MLXArray.fromHandle(addon.full(normalizedShape, value as number));
 }
 
 export function zeros_like(base: MLXArray): MLXArray {
