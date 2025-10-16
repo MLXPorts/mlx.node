@@ -176,10 +176,10 @@ export interface ArangeOptions extends StreamOptions {
 /**
  * Generate evenly spaced values within a given interval.
  * 
- * @param start - The start of the interval (inclusive). If only one argument is provided, this is the stop value and start is 0.
- * @param stop - The end of the interval (exclusive). Required if start is provided.
+ * @param start - The start of the interval (inclusive). If only one argument is provided, this argument is treated as `stop` and the interval starts at 0.
+ * @param stop - The end of the interval (exclusive). Required if both `start` and `stop` are specified.
  * @param step - The spacing between values. Default is 1.
- * @param options - Optional dtype and stream parameters.
+ * @param options - Optional parameters, including `dtype` and `stream`.
  * @returns An MLXArray of evenly spaced values.
  * 
  * @example
