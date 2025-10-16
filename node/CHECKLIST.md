@@ -21,9 +21,9 @@ Reference source map: see `PORTING_PLAN.md` for the list of upstream C++ and Pyt
  - [x] Support scalar/shape utilities (e.g. broadcasting rules, `array.zeros_like`, `array.ones_like`).
 
 ## Array Operations
-- [ ] Port structural ops: `reshape`, `transpose`, `swapaxes`, `moveaxis`.
+- [x] Port structural ops: `reshape`, `transpose`, `swapaxes`, `moveaxis`.
 - [ ] Implement indexing/slicing semantics consistent with Python `mlx.core.array`.
-- [ ] Add arithmetic and comparison ops leveraging MLX primitives (`add`, `mul`, `where`, etc.).
+- [x] Add arithmetic and comparison ops leveraging MLX primitives (`add`, `multiply`, `where`, etc.) with scalar support.
 - [ ] Verify gradient/autodiff compatibility once higher-level ops are in place.
 
 ## React/Next Integration (high priority)
