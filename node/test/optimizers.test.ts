@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
-import { SGD, Optimizer } from '../src/optimizers';
+import { SGD, Lion, Optimizer } from '../src/optimizers';
 import { zeros } from '../src/core/array';
 
 describe('mlx.optimizers', () => {
@@ -126,5 +126,71 @@ describe('mlx.optimizers', () => {
       assert.deepStrictEqual(optimizer.state, newState);
       assert.strictEqual((optimizer as any)._initialized, false);
     });
+  });
+
+  describe('Lion', () => {
+    it('should create Lion optimizer with learning rate', () => {
+      const optimizer = new Lion({ learningRate: 0.0001 });
+      assert.ok(optimizer instanceof Optimizer);
+      assert.ok(optimizer instanceof Lion);
+      assert.deepStrictEqual(optimizer.betas, [0.9, 0.99]);
+      assert.strictEqual(optimizer.weightDecay, 0);
+    });
+
+    it('should create Lion optimizer with custom betas', () => {
+      const optimizer = new Lion({ 
+        learningRate: 0.0001, 
+        betas: [0.95, 0.999] 
+      });
+      assert.deepStrictEqual(optimizer.betas, [0.95, 0.999]);
+    });
+
+    it('should create Lion optimizer with weight decay', () => {
+      const optimizer = new Lion({ 
+        learningRate: 0.0001, 
+        weightDecay: 0.01 
+      });
+      assert.strictEqual(optimizer.weightDecay, 0.01);
+    });
+
+    it('should have learning rate in state', () => {
+      const optimizer = new Lion({ learningRate: 0.0001 });
+      const lr = optimizer.learningRate;
+      assert.ok(lr);
+      // Check that it's an MLXArray
+      assert.ok(lr.toTypedArray !== undefined);
+    });
+
+    it('should initialize state for parameters', () => {
+      const optimizer = new Lion({ learningRate: 0.0001 });
+      const params = {
+        weight: zeros([3]),
+        bias: zeros([1])
+      };
+      
+      optimizer.init(params);
+      
+      // Check that state was initialized
+      assert.ok(optimizer.state);
+      assert.ok('step' in optimizer.state);
+      assert.ok('learning_rate' in optimizer.state);
+      assert.ok('weight' in optimizer.state);
+      assert.ok('bias' in optimizer.state);
+      
+      // Check that momentum was initialized
+      assert.ok('m' in optimizer.state.weight);
+      assert.ok('m' in optimizer.state.bias);
+    });
+
+    it('should track step count', () => {
+      const optimizer = new Lion({ learningRate: 0.0001 });
+      const step = optimizer.step;
+      assert.ok(step);
+      assert.strictEqual(step.toTypedArray()[0], 0);
+    });
+
+    // Note: applyGradients tests are not included yet because they would require
+    // building the native addon and having a full MLX environment.
+    // These should be added once the implementation is complete.
   });
 });

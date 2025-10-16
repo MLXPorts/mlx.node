@@ -160,6 +160,17 @@ export function multiply(
   return binaryOp('multiply', a, b, options);
 }
 
+export function subtract(
+  a: ScalarOrArray,
+  b: ScalarOrArray,
+  options?: BinaryOpOptions,
+): MLXArray {
+  const args: any[] = [toNativeScalarOrArray(a), toNativeScalarOrArray(b)];
+  appendStreamArg(args, options?.stream);
+  const handle = addon.subtract(...args);
+  return MLXArray.fromHandle(handle);
+}
+
 export interface WhereOptions extends StreamOptions {}
 
 export function where(
@@ -184,6 +195,13 @@ export function tan(a: ScalarOrArray, options?: UnaryOpOptions): MLXArray {
   const args: any[] = [toNativeScalarOrArray(a)];
   appendStreamArg(args, options?.stream);
   const handle = addon.tan(...args);
+  return MLXArray.fromHandle(handle);
+}
+
+export function sign(a: ScalarOrArray, options?: UnaryOpOptions): MLXArray {
+  const args: any[] = [toNativeScalarOrArray(a)];
+  appendStreamArg(args, options?.stream);
+  const handle = addon.sign(...args);
   return MLXArray.fromHandle(handle);
 }
 

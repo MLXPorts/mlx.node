@@ -7,6 +7,7 @@
 
 import MLXArray, { zeros, zeros_like } from '../core/array';
 import { treeMap } from '../utils';
+import { add, multiply, subtract, sign } from '../core/ops';
 
 /**
  * Scheduler function type - maps step number to a parameter value
@@ -322,7 +323,98 @@ export class SGD extends Optimizer {
   }
 }
 
+/**
+ * Lion Optimizer Options
+ */
+export interface LionOptions {
+  /** The learning rate */
+  learningRate: SchedulableParam;
+  /** The coefficients (beta1, beta2) used for computing gradient momentum and update direction (default: [0.9, 0.99]) */
+  betas?: [number, number];
+  /** The weight decay (default: 0.0) */
+  weightDecay?: number;
+}
+
+/**
+ * The Lion optimizer.
+ * 
+ * Lion (EvoLved Sign Momentum) is an optimizer that uses the sign operation for updates,
+ * which tends to produce updates with larger norm than other optimizers like SGD and Adam.
+ * 
+ * We recommend a learning rate that is 3-10x smaller than AdamW and a weight decay 
+ * 3-10x larger than AdamW to maintain the strength (lr * wd).
+ * 
+ * Reference: Chen, X. Symbolic Discovery of Optimization Algorithms. 
+ * arXiv preprint arXiv:2302.06675.
+ * 
+ * Update formula:
+ *   c_{t+1} = β₁ * m_t + (1 - β₁) * g_t
+ *   m_{t+1} = β₂ * m_t + (1 - β₂) * g_t
+ *   w_{t+1} = w_t - η * (sign(c_t) + λ * w_t)
+ * 
+ * where η is the learning rate, β₁ and β₂ are the beta coefficients,
+ * and λ is the weight decay.
+ * 
+ * @example
+ * ```typescript
+ * const optimizer = new Lion({ learningRate: 0.0001, betas: [0.9, 0.99], weightDecay: 0.01 });
+ * // ... during training:
+ * // const updatedParams = optimizer.applyGradients(gradients, parameters);
+ * ```
+ */
+export class Lion extends Optimizer {
+  betas: [number, number];
+  weightDecay: number;
+
+  constructor(options: LionOptions) {
+    super();
+
+    const { learningRate, betas = [0.9, 0.99], weightDecay = 0.0 } = options;
+
+    this._maybeSchedule('learning_rate', learningRate);
+    this.betas = betas;
+    this.weightDecay = weightDecay;
+  }
+
+  protected initSingle(parameter: MLXArray, state: Record<string, any>): void {
+    // Initialize momentum with zeros_like
+    state.m = zeros_like(parameter);
+  }
+
+  protected applySingle(
+    gradient: MLXArray,
+    parameter: MLXArray,
+    state: Record<string, any>
+  ): MLXArray {
+    // Get learning rate (Note: In Python, lr is cast to gradient.dtype using astype)
+    // For now, we use the learning rate as-is since it's stored as an MLXArray
+    const lr = this.learningRate;
+    const [b1, b2] = this.betas;
+    const weightDecay = this.weightDecay;
+
+    // Get momentum from state
+    const m = state.m;
+
+    // Compute c = b1 * m + (1 - b1) * gradient
+    const c = add(multiply(b1, m), multiply(1 - b1, gradient));
+
+    // Update momentum: m = b2 * m + (1 - b2) * gradient
+    state.m = add(multiply(b2, m), multiply(1 - b2, gradient));
+
+    // Apply weight decay if configured
+    let updatedParameter = parameter;
+    if (weightDecay > 0) {
+      // parameter = (1 - lr * weight_decay) * parameter
+      updatedParameter = multiply(subtract(1, multiply(lr, weightDecay)), parameter);
+    }
+
+    // Compute final update: parameter - lr * sign(c)
+    return subtract(updatedParameter, multiply(lr, sign(c)));
+  }
+}
+
 export default {
   Optimizer,
   SGD,
+  Lion,
 };

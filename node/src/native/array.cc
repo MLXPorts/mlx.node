@@ -2029,6 +2029,34 @@ Napi::Value Multiply(const Napi::CallbackInfo& info) {
   return WrapArray(env, tensor);
 }
 
+Napi::Value Subtract(const Napi::CallbackInfo& info) {
+  auto env = info.Env();
+  if (info.Length() < 2) {
+    Napi::TypeError::New(env, "subtract expects two arguments")
+        .ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
+  auto a = ToArray(env, info[0]);
+  if (env.IsExceptionPending()) {
+    return env.Null();
+  }
+
+  auto b = ToArray(env, info[1]);
+  if (env.IsExceptionPending()) {
+    return env.Null();
+  }
+
+  auto streamArg = GetStreamArgument(info, 2);
+  if (env.IsExceptionPending()) {
+    return env.Null();
+  }
+
+  auto tensor =
+      std::make_shared<mlx::core::array>(mlx::core::subtract(a, b, streamArg));
+  return WrapArray(env, tensor);
+}
+
 Napi::Value Matmul(const Napi::CallbackInfo& info) {
   auto env = info.Env();
   if (info.Length() < 2) {
@@ -2092,6 +2120,29 @@ Napi::Value Tan(const Napi::CallbackInfo& info) {
 
   auto tensor =
       std::make_shared<mlx::core::array>(mlx::core::tan(a, streamArg));
+  return WrapArray(env, tensor);
+}
+
+Napi::Value Sign(const Napi::CallbackInfo& info) {
+  auto env = info.Env();
+  if (info.Length() < 1) {
+    Napi::TypeError::New(env, "sign expects at least one argument")
+        .ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
+  auto a = ToArray(env, info[0]);
+  if (env.IsExceptionPending()) {
+    return env.Null();
+  }
+
+  auto streamArg = GetStreamArgument(info, 1);
+  if (env.IsExceptionPending()) {
+    return env.Null();
+  }
+
+  auto tensor =
+      std::make_shared<mlx::core::array>(mlx::core::sign(a, streamArg));
   return WrapArray(env, tensor);
 }
 
@@ -2221,9 +2272,11 @@ Napi::Object Init(Napi::Env env, Napi::Object exports) {
   core.Set("arange", Napi::Function::New(env, Arange, "arange", &data));
   core.Set("add", Napi::Function::New(env, Add, "add", &data));
   core.Set("multiply", Napi::Function::New(env, Multiply, "multiply", &data));
+  core.Set("subtract", Napi::Function::New(env, Subtract, "subtract", &data));
   core.Set("matmul", Napi::Function::New(env, Matmul, "matmul", &data));
   core.Set("where", Napi::Function::New(env, Where, "where", &data));
   core.Set("tan", Napi::Function::New(env, Tan, "tan", &data));
+  core.Set("sign", Napi::Function::New(env, Sign, "sign", &data));
 
   // (already initialized dtype/streams above)
 
