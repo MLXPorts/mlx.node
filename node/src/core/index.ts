@@ -68,6 +68,7 @@ import {
   multiply,
   where,
   arange,
+  tan,
   type ReshapeOptions,
   type TransposeOptions,
   type MoveAxisOptions,
@@ -75,6 +76,7 @@ import {
   type BinaryOpOptions,
   type WhereOptions,
   type ArangeOptions,
+  type UnaryOpOptions,
 } from './ops';
 
 export type {
@@ -95,6 +97,7 @@ export type {
   BinaryOpOptions,
   WhereOptions,
   ArangeOptions,
+  UnaryOpOptions,
 } from './ops';
 export { MLXArray, MLXArray as Array, array };
 export { zeros, zeros_like, ones, ones_like, full };
@@ -109,7 +112,7 @@ export {
   streamContext as stream,
   withStream,
 };
-export { reshape, transpose, moveaxis, swapaxes, add, multiply, where, arange };
+export { reshape, transpose, moveaxis, swapaxes, add, multiply, where, arange, tan };
 export {
   dtypeModule as dtype,
   Dtype,
@@ -172,6 +175,7 @@ const core = {
   add,
   multiply,
   where,
+  tan,
   device: deviceModule,
   Dtype,
   dtype: dtypeModule,

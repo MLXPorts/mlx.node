@@ -178,6 +178,15 @@ export function where(
   return MLXArray.fromHandle(handle);
 }
 
+export interface UnaryOpOptions extends StreamOptions {}
+
+export function tan(a: ScalarOrArray, options?: UnaryOpOptions): MLXArray {
+  const args: any[] = [toNativeScalarOrArray(a)];
+  appendStreamArg(args, options?.stream);
+  const handle = addon.tan(...args);
+  return MLXArray.fromHandle(handle);
+}
+
 export interface ArangeOptions extends StreamOptions {
   dtype?: any;
 }

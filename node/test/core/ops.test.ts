@@ -118,6 +118,26 @@ describe('core ops', () => {
     assert.deepEqual(toArray(result), [10, 200, 30, 400]);
   });
 
+  it('tan computes element-wise tangent', () => {
+    const a = array([0, Math.PI / 4, Math.PI / 2], [3, 1]);
+    const result = mlx.core.tan(a);
+    assert.deepEqual(result.shape, [3, 1]);
+    const values = toArray(result);
+    // tan(0) = 0
+    assert.ok(Math.abs(values[0]) < 1e-5);
+    // tan(π/4) ≈ 1
+    assert.ok(Math.abs(values[1] - 1) < 1e-5);
+    // tan(π/2) is undefined (very large), so we just check it's a large value
+    assert.ok(Math.abs(values[2]) > 1e5);
+  });
+
+  it('tan supports scalar input', () => {
+    const result = mlx.core.tan(0);
+    assert.deepEqual(result.shape, []);
+    const value = toArray(result);
+    assert.ok(Math.abs(value as number) < 1e-5);
+  });
+
   it('operations respect explicit streams', async () => {
     const stream = newStream();
     await withStream(stream, () => {
