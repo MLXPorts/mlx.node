@@ -3,12 +3,13 @@ import * as utils from './utils';
 import * as core from './core';
 import * as streaming from './streaming';
 import * as react from './react';
+import * as optimizers from './optimizers';
 
 export const native = {
   hello: (): string => addon.hello(),
 };
 
-export { core, utils, streaming, react };
+export { core, utils, streaming, react, optimizers };
 export const array = core.array;
 export const Array = core.Array;
 export const Stream = core.Stream;
@@ -40,6 +41,7 @@ export default {
   utils,
   react,
   streaming,
+  optimizers,
   device,
   array,
   Array,
