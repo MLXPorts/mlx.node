@@ -8,6 +8,8 @@ This module provides optimizer implementations for training neural networks with
 
 - **Base `Optimizer` class**: Abstract base class with state management, scheduler support, and parameter tree handling
 - **`SGD` optimizer class**: Stochastic Gradient Descent with momentum, weight decay, dampening, and Nesterov momentum support
+- **`Lion` optimizer class**: Lion (EvoLved Sign Momentum) optimizer with momentum and weight decay support
+- **Core operations**: Added `sign` and `subtract` operations for optimizer support
 - **API structure**: Matches Python MLX API for optimizer initialization and configuration
 - **Type safety**: Full TypeScript types and interfaces
 - **Validation**: Parameter validation (e.g., Nesterov requirements)
@@ -16,18 +18,20 @@ This module provides optimizer implementations for training neural networks with
 
 ### ⚠️ Partially Implemented
 
-The `SGD.applySingle()` method has a placeholder implementation because it requires core array operations that are not yet available in the Node.js MLX bindings:
+The `SGD.applySingle()` method has a placeholder implementation because it requires some additional operations:
 
-**Missing Core Operations:**
-- `subtract(a, b)` - Array subtraction
-- Scalar-array arithmetic (e.g., `multiply(scalar, array)`)
-- `astype()` - Dtype conversion for arrays
-- Proper scalar array construction from numbers
+**Available Core Operations:**
+- ✅ `subtract(a, b)` - Array subtraction (now available)
+- ✅ `sign(a)` - Sign function (now available)
+- ✅ Scalar-array arithmetic via `add`, `multiply`, `subtract` with scalar support
+- ⚠️ `astype()` - Dtype conversion (used internally but not exposed as method)
+- ⚠️ Proper scalar array construction from numbers
 
 **Current Workarounds:**
 - Step counter uses `zeros([])` instead of proper scalar construction
 - Learning rate setting creates empty arrays instead of proper scalar values
-- `applySingle()` throws an error explaining the missing dependencies
+- `SGD.applySingle()` throws an error explaining the missing dependencies
+- `Lion.applySingle()` is fully implemented and working
 
 ## Usage Example
 
@@ -98,6 +102,35 @@ Where:
 - Nesterov momentum requires `momentum > 0` and `dampening = 0`
 - Throws error if validation fails
 
+### `Lion` (EvoLved Sign Momentum)
+
+**Constructor Options:**
+```typescript
+interface LionOptions {
+  learningRate: number | Scheduler;  // Learning rate (can be scheduled)
+  betas?: [number, number];          // Beta coefficients (default: [0.9, 0.99])
+  weightDecay?: number;              // Weight decay (default: 0.0)
+}
+```
+
+**Update Formula:**
+```
+c_{t+1} = β₁ * m_t + (1 - β₁) * g_t
+m_{t+1} = β₂ * m_t + (1 - β₂) * g_t
+w_{t+1} = w_t - η * (sign(c_t) + λ * w_t)
+```
+
+Where:
+- `η` is the learning rate
+- `β₁` and `β₂` are the beta coefficients
+- `λ` is the weight decay
+
+**Notes:**
+- Updates use the sign operation, resulting in larger norm updates than SGD/Adam
+- Recommended: learning rate 3-10x smaller than AdamW
+- Recommended: weight decay 3-10x larger than AdamW
+- Reference: Chen, X. Symbolic Discovery of Optimization Algorithms. arXiv:2302.06675
+
 ## Architecture
 
 The optimizer implementation follows the Python MLX design:
@@ -152,6 +185,7 @@ To complete the SGD implementation:
 6. **Add integration tests** that verify gradient application with actual arrays
 
 7. **Implement other optimizers**:
+   - ✅ Lion (completed)
    - Adam
    - AdamW  
    - RMSprop

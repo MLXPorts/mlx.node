@@ -23,7 +23,8 @@ Reference source map: see `PORTING_PLAN.md` for the list of upstream C++ and Pyt
 ## Array Operations
 - [x] Port structural ops: `reshape`, `transpose`, `swapaxes`, `moveaxis`.
 - [ ] Implement indexing/slicing semantics consistent with Python `mlx.core.array`.
-- [x] Add arithmetic and comparison ops leveraging MLX primitives (`add`, `multiply`, `where`, etc.) with scalar support.
+- [x] Add arithmetic and comparison ops leveraging MLX primitives (`add`, `multiply`, `subtract`, `where`, etc.) with scalar support.
+- [x] Add unary ops (`tan`, `sign`) for optimizer support.
 - [ ] Verify gradient/autodiff compatibility once higher-level ops are in place.
 
 ## React/Next Integration (high priority)
@@ -44,6 +45,7 @@ Reference source map: see `PORTING_PLAN.md` for the list of upstream C++ and Pyt
 - [x] Base `Optimizer` class with state management and tree-based parameter handling.
 - [x] `SGD` optimizer (structure and validation complete, blocked on missing core ops).
 - [ ] Complete `SGD.applySingle()` implementation (requires subtract, scalar ops, astype).
+- [x] `Lion` optimizer (fully implemented with sign and subtract operations).
 - [ ] Add `Adam` optimizer.
 - [ ] Add `AdamW` optimizer.
 - [ ] Add `RMSprop` optimizer.
