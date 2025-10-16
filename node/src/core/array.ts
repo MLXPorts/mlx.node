@@ -1,5 +1,5 @@
-import addon from '../internal/addon';
-import type { DTypeKey } from './dtype';
+import addon from "../internal/addon";
+import type { DTypeKey } from "./dtype";
 
 export type DType = DTypeKey;
 
@@ -19,7 +19,7 @@ type SupportedTypedArray =
 
 function normalizeShape(shape: readonly number[]): number[] {
   if (!Array.isArray(shape)) {
-    throw new Error('Shape must be an array');
+    throw new Error("Shape must be an array");
   }
   return shape.map((dim, index) => {
     if (!Number.isFinite(dim) || dim < 0) {
@@ -41,18 +41,18 @@ function isTypedArray(input: unknown): input is SupportedTypedArray {
 }
 
 function inferDTypeFromTypedArray(array: SupportedTypedArray): DType {
-  if (array instanceof Float32Array) return 'float32';
-  if (array instanceof Float64Array) return 'float64';
-  if (array instanceof Int8Array) return 'int8';
+  if (array instanceof Float32Array) return "float32";
+  if (array instanceof Float64Array) return "float64";
+  if (array instanceof Int8Array) return "int8";
   if (array instanceof Uint8Array || array instanceof Uint8ClampedArray)
-    return 'uint8';
-  if (array instanceof Int16Array) return 'int16';
-  if (array instanceof Uint16Array) return 'uint16';
-  if (array instanceof Int32Array) return 'int32';
-  if (array instanceof Uint32Array) return 'uint32';
-  if (array instanceof BigInt64Array) return 'int64';
-  if (array instanceof BigUint64Array) return 'uint64';
-  throw new Error('Unsupported TypedArray input');
+    return "uint8";
+  if (array instanceof Int16Array) return "int16";
+  if (array instanceof Uint16Array) return "uint16";
+  if (array instanceof Int32Array) return "int32";
+  if (array instanceof Uint32Array) return "uint32";
+  if (array instanceof BigInt64Array) return "int64";
+  if (array instanceof BigUint64Array) return "uint64";
+  throw new Error("Unsupported TypedArray input");
 }
 
 function createTypedArrayFromNumbers(
@@ -60,9 +60,9 @@ function createTypedArrayFromNumbers(
   dtype: DType,
   elementCount: number,
 ): SupportedTypedArray {
-  if (dtype === 'complex64') {
+  if (dtype === "complex64") {
     if (data.length !== elementCount * 2) {
-      throw new Error('Complex64 data length must be elementCount * 2');
+      throw new Error("Complex64 data length must be elementCount * 2");
     }
     const output = new Float32Array(data.length);
     data.forEach((value, index) => {
@@ -72,88 +72,88 @@ function createTypedArrayFromNumbers(
   }
 
   if (data.length !== elementCount) {
-    throw new Error('Data length does not match the provided shape');
+    throw new Error("Data length does not match the provided shape");
   }
 
   switch (dtype) {
-    case 'float32': {
+    case "float32": {
       const output = new Float32Array(elementCount);
       data.forEach((value, index) => {
         output[index] = Number(value);
       });
       return output;
     }
-    case 'float64': {
+    case "float64": {
       const output = new Float64Array(elementCount);
       data.forEach((value, index) => {
         output[index] = Number(value);
       });
       return output;
     }
-    case 'int8': {
+    case "int8": {
       const output = new Int8Array(elementCount);
       data.forEach((value, index) => {
         output[index] = Number(value);
       });
       return output;
     }
-    case 'uint8':
-    case 'bool': {
+    case "uint8":
+    case "bool": {
       const output = new Uint8Array(elementCount);
       data.forEach((value, index) => {
         const n = Number(value);
-        output[index] = dtype === 'bool' ? (n ? 1 : 0) : n;
+        output[index] = dtype === "bool" ? (n ? 1 : 0) : n;
       });
       return output;
     }
-    case 'int16': {
+    case "int16": {
       const output = new Int16Array(elementCount);
       data.forEach((value, index) => {
         output[index] = Number(value);
       });
       return output;
     }
-    case 'uint16': {
+    case "uint16": {
       const output = new Uint16Array(elementCount);
       data.forEach((value, index) => {
         output[index] = Number(value);
       });
       return output;
     }
-    case 'int32': {
+    case "int32": {
       const output = new Int32Array(elementCount);
       data.forEach((value, index) => {
         output[index] = Number(value);
       });
       return output;
     }
-    case 'uint32': {
+    case "uint32": {
       const output = new Uint32Array(elementCount);
       data.forEach((value, index) => {
         output[index] = Number(value);
       });
       return output;
     }
-    case 'int64': {
+    case "int64": {
       const output = new BigInt64Array(elementCount);
       data.forEach((value, index) => {
         output[index] = BigInt(value);
       });
       return output;
     }
-    case 'uint64': {
+    case "uint64": {
       const output = new BigUint64Array(elementCount);
       data.forEach((value, index) => {
         const big = BigInt(value);
         if (big < 0n) {
-          throw new Error('uint64 values must be non-negative');
+          throw new Error("uint64 values must be non-negative");
         }
         output[index] = big;
       });
       return output;
     }
-    case 'float16':
-    case 'bfloat16':
+    case "float16":
+    case "bfloat16":
       throw new Error(
         `${dtype} requires a Uint16Array input. Provide encoded raw values.`,
       );
@@ -169,11 +169,11 @@ function castTypedArrayToDType(
 ): SupportedTypedArray {
   const currentDType = inferDTypeFromTypedArray(array);
   if (currentDType === dtype) {
-    if (dtype === 'complex64' && array.length !== elementCount * 2) {
-      throw new Error('Complex64 data length must be elementCount * 2');
+    if (dtype === "complex64" && array.length !== elementCount * 2) {
+      throw new Error("Complex64 data length must be elementCount * 2");
     }
-    if (dtype !== 'complex64' && array.length !== elementCount) {
-      throw new Error('Data length does not match the provided shape');
+    if (dtype !== "complex64" && array.length !== elementCount) {
+      throw new Error("Data length does not match the provided shape");
     }
     return array;
   }
@@ -208,7 +208,7 @@ export class MLXArray {
   static from(
     data: SupportedTypedArray | NumericArray,
     shape: readonly number[],
-    dtype: DType = 'float32',
+    dtype: DType = "float32",
   ): MLXArray {
     const normalizedShape = normalizeShape(shape);
     const elements = elementCount(normalizedShape);
@@ -221,7 +221,7 @@ export class MLXArray {
     data: Float32Array | readonly number[],
     shape: readonly number[],
   ): MLXArray {
-    return MLXArray.from(data, shape, 'float32');
+    return MLXArray.from(data, shape, "float32");
   }
 
   get shape(): number[] {
@@ -242,8 +242,8 @@ export class MLXArray {
   }
 
   toFloat32Array(): Float32Array {
-    if (this.dtype !== 'float32') {
-      throw new Error('Array dtype is not float32');
+    if (this.dtype !== "float32") {
+      throw new Error("Array dtype is not float32");
     }
     return this.handle.toFloat32Array();
   }
@@ -255,9 +255,9 @@ export class MLXArray {
   toArray(): ArrayElement[] {
     const data = this.toTypedArray();
     switch (this.dtype) {
-      case 'bool':
+      case "bool":
         return Array.from(data as Uint8Array, (value) => value !== 0);
-      case 'complex64': {
+      case "complex64": {
         const values = data as Float32Array;
         const output: ArrayElement[] = [];
         for (let i = 0; i < values.length; i += 2) {
@@ -274,7 +274,7 @@ export class MLXArray {
 export function array(
   data: SupportedTypedArray | NumericArray,
   shape: readonly number[],
-  dtype: DType = 'float32',
+  dtype: DType = "float32",
 ): MLXArray {
   return MLXArray.from(data, shape, dtype);
 }
@@ -282,21 +282,21 @@ export function array(
 export const normalizeShapeInput = (shape: readonly number[]): number[] =>
   Array.from(shape, (dim) => {
     if (!Number.isFinite(dim)) {
-      throw new Error('Shape entries must be finite numbers');
+      throw new Error("Shape entries must be finite numbers");
     }
     return Math.trunc(dim);
   });
 
 export function zeros(
   shape: readonly number[],
-  dtype: DType = 'float32',
+  dtype: DType = "float32",
 ): MLXArray {
   return MLXArray.fromHandle(addon.zeros(normalizeShapeInput(shape), dtype));
 }
 
 export function ones(
   shape: readonly number[],
-  dtype: DType = 'float32',
+  dtype: DType = "float32",
 ): MLXArray {
   return MLXArray.fromHandle(addon.ones(normalizeShapeInput(shape), dtype));
 }
@@ -333,14 +333,14 @@ export function full(
       addon.full(normalizeShapeInput(shape), value.toNative(), dtype),
     );
   }
-  
+
   // Handle TypedArray values
   if (isTypedArray(value)) {
     return MLXArray.fromHandle(
       addon.full(normalizeShapeInput(shape), value, dtype),
     );
   }
-  
+
   // Handle scalar values
   return MLXArray.fromHandle(
     addon.full(normalizeShapeInput(shape), value as number, dtype),
