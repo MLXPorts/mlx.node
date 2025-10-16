@@ -40,7 +40,19 @@ Reference source map: see `PORTING_PLAN.md` for the list of upstream C++ and Pyt
 - [x] Stage upstream `mlx.metallib` and kernel sources in `node/vendor` so Metal runtime can initialize under Node.
 - [ ] Automate metallib generation during `npm run build` once the Metal toolchain is available in CI/dev environments.
 
+## Optimizers (`mlx.optimizers`)
+- [x] Base `Optimizer` class with state management and tree-based parameter handling.
+- [x] `SGD` optimizer (structure and validation complete, blocked on missing core ops).
+- [ ] Complete `SGD.applySingle()` implementation (requires subtract, scalar ops, astype).
+- [ ] Add `Adam` optimizer.
+- [ ] Add `AdamW` optimizer.
+- [ ] Add `RMSprop` optimizer.
+- [ ] Add `Adagrad` optimizer.
+- [ ] Add scheduler support (`mlx.optimizers.schedulers`).
+
 ## Tooling & Tests
 - [x] Mocha + TypeScript test harness covering core entry points.
+- [x] Basic optimizer tests (constructor, validation, state management).
 - [ ] Add targeted crash/regression tests for dtype/array interop (LLDB snippets, stress cases).
+- [ ] Add integration tests for optimizers with gradient application.
 - [ ] Automate build/test via CI once the surface stabilizes.
