@@ -168,3 +168,64 @@ export function where(
   const handle = addon.where(...args);
   return MLXArray.fromHandle(handle);
 }
+
+export interface ArangeOptions extends StreamOptions {
+  dtype?: any;
+}
+
+/**
+ * Generate evenly spaced values within a given interval.
+ * 
+ * @param start - The start of the interval (inclusive). If only one argument is provided, this is the stop value and start is 0.
+ * @param stop - The end of the interval (exclusive). Required if start is provided.
+ * @param step - The spacing between values. Default is 1.
+ * @param options - Optional dtype and stream parameters.
+ * @returns An MLXArray of evenly spaced values.
+ * 
+ * @example
+ * // Generate 0 to 9
+ * arange(10)
+ * 
+ * @example
+ * // Generate 5 to 9
+ * arange(5, 10)
+ * 
+ * @example
+ * // Generate 0 to 9 with step 2
+ * arange(0, 10, 2)
+ * 
+ * @example
+ * // Generate 0.0 to 9.5 with step 0.5
+ * arange(0, 10, 0.5)
+ */
+export function arange(
+  start: number,
+  stop?: number,
+  step?: number,
+  options?: ArangeOptions,
+): MLXArray {
+  const args: any[] = [];
+  
+  // Handle overloaded signatures
+  if (stop === undefined) {
+    // Single argument: arange(stop)
+    args.push(start);
+  } else {
+    // Two or three arguments: arange(start, stop[, step])
+    args.push(start, stop);
+    if (step !== undefined) {
+      args.push(step);
+    }
+  }
+  
+  // Add optional dtype
+  if (options?.dtype !== undefined) {
+    args.push(options.dtype);
+  }
+  
+  // Add optional stream
+  appendStreamArg(args, options?.stream);
+  
+  const handle = addon.arange(...args);
+  return MLXArray.fromHandle(handle);
+}
