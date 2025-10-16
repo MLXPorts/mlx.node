@@ -144,46 +144,46 @@ describe('arange', () => {
 
   it('infers int32 dtype for integer inputs', () => {
     const result = arange(10);
-    assert.equal(result.dtype.key, 'int32');
+    assert.equal(result.dtype, 'int32');
   });
 
   it('infers float32 dtype for float inputs', () => {
     const result = arange(10.0);
-    assert.equal(result.dtype.key, 'float32');
+    assert.equal(result.dtype, 'float32');
   });
 
   it('respects explicit dtype parameter', () => {
     const result = arange(10, undefined, undefined, { dtype: float32 });
-    assert.equal(result.dtype.key, 'float32');
+    assert.equal(result.dtype, 'float32');
   });
 
   it('works with explicit float16 dtype', () => {
     const result = arange(5, undefined, undefined, { dtype: float16 });
-    assert.equal(result.dtype.key, 'float16');
+    assert.equal(result.dtype, 'float16');
     assert.deepEqual(result.shape, [5]);
   });
 
   it('works with explicit uint32 dtype', () => {
     const result = arange(5, undefined, undefined, { dtype: uint32 });
-    assert.equal(result.dtype.key, 'uint32');
+    assert.equal(result.dtype, 'uint32');
     assert.deepEqual(result.shape, [5]);
   });
 
   it('works with explicit int64 dtype', () => {
     const result = arange(5, undefined, undefined, { dtype: int64 });
-    assert.equal(result.dtype.key, 'int64');
+    assert.equal(result.dtype, 'int64');
     assert.deepEqual(result.shape, [5]);
   });
 
   it('handles start, stop, and dtype', () => {
     const result = arange(5, 10, undefined, { dtype: float32 });
-    assert.equal(result.dtype.key, 'float32');
+    assert.equal(result.dtype, 'float32');
     assert.deepEqual(result.shape, [5]);
   });
 
   it('handles start, stop, step, and dtype', () => {
     const result = arange(0, 10, 2, { dtype: float32 });
-    assert.equal(result.dtype.key, 'float32');
+    assert.equal(result.dtype, 'float32');
     assert.deepEqual(result.shape, [5]);
     const values = toArray(result);
     assert.equal(values[0], 0);
