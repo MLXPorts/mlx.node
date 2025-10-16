@@ -2072,6 +2072,29 @@ Napi::Value Where(const Napi::CallbackInfo& info) {
   return WrapArray(env, tensor);
 }
 
+Napi::Value Tan(const Napi::CallbackInfo& info) {
+  auto env = info.Env();
+  if (info.Length() < 1) {
+    Napi::TypeError::New(env, "tan expects at least one argument")
+        .ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
+  auto a = ToArray(env, info[0]);
+  if (env.IsExceptionPending()) {
+    return env.Null();
+  }
+
+  auto streamArg = GetStreamArgument(info, 1);
+  if (env.IsExceptionPending()) {
+    return env.Null();
+  }
+
+  auto tensor =
+      std::make_shared<mlx::core::array>(mlx::core::tan(a, streamArg));
+  return WrapArray(env, tensor);
+}
+
 Napi::Value Hello(const Napi::CallbackInfo& info) {
   auto env = info.Env();
   const auto version = mlx::core::version();
@@ -2200,6 +2223,7 @@ Napi::Object Init(Napi::Env env, Napi::Object exports) {
   core.Set("multiply", Napi::Function::New(env, Multiply, "multiply", &data));
   core.Set("matmul", Napi::Function::New(env, Matmul, "matmul", &data));
   core.Set("where", Napi::Function::New(env, Where, "where", &data));
+  core.Set("tan", Napi::Function::New(env, Tan, "tan", &data));
 
   // (already initialized dtype/streams above)
 
