@@ -116,6 +116,7 @@ export {
   withStream,
 };
 export { reshape, transpose, moveaxis, swapaxes, add, multiply, subtract, where, arange, tan, square, sign };
+export { reshape, transpose, moveaxis, swapaxes, add, multiply, subtract, where, arange, tan, sign };
 export {
   dtypeModule as dtype,
   Dtype,
