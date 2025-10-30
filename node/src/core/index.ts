@@ -69,6 +69,7 @@ import {
   where,
   arange,
   tan,
+  sign,
   type ReshapeOptions,
   type TransposeOptions,
   type MoveAxisOptions,
@@ -112,7 +113,7 @@ export {
   streamContext as stream,
   withStream,
 };
-export { reshape, transpose, moveaxis, swapaxes, add, multiply, where, arange, tan };
+export { reshape, transpose, moveaxis, swapaxes, add, multiply, where, arange, tan, sign };
 export {
   dtypeModule as dtype,
   Dtype,
@@ -176,6 +177,7 @@ const core = {
   multiply,
   where,
   tan,
+  sign,
   device: deviceModule,
   Dtype,
   dtype: dtypeModule,
