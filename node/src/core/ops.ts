@@ -199,6 +199,17 @@ export function rsqrt(a: ScalarOrArray, options?: UnaryOpOptions): MLXArray {
   const args: any[] = [toNativeScalarOrArray(a)];
   appendStreamArg(args, options?.stream);
   const handle = addon.rsqrt(...args);
+export function square(a: ScalarOrArray, options?: UnaryOpOptions): MLXArray {
+  const args: any[] = [toNativeScalarOrArray(a)];
+  appendStreamArg(args, options?.stream);
+  const handle = addon.square(...args);
+  return MLXArray.fromHandle(handle);
+}
+
+export function sign(a: ScalarOrArray, options?: UnaryOpOptions): MLXArray {
+  const args: any[] = [toNativeScalarOrArray(a)];
+  appendStreamArg(args, options?.stream);
+  const handle = addon.sign(...args);
   return MLXArray.fromHandle(handle);
 }
 
