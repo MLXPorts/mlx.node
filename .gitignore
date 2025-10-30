@@ -25,3 +25,6 @@ node/dist/
 # Misc caches
 .cache/
 coverage/
+
+# CodeQL
+_codeql_detected_source_root
