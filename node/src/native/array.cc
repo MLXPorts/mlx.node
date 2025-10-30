@@ -2032,7 +2032,8 @@ Napi::Value Multiply(const Napi::CallbackInfo& info) {
 Napi::Value Subtract(const Napi::CallbackInfo& info) {
   auto env = info.Env();
   if (info.Length() < 2) {
-    Napi::TypeError::New(env, "subtract expects two arguments (arrays or scalars)")
+    Napi::TypeError::New(
+        env, "subtract expects two arguments (arrays or scalars)")
         .ThrowAsJavaScriptException();
     return env.Null();
   }
