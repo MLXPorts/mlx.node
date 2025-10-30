@@ -7,6 +7,7 @@ import mlx, {
   swapaxes,
   add,
   multiply,
+  subtract,
   where,
   arange,
   newStream,
@@ -107,6 +108,36 @@ describe('core ops', () => {
     const result = multiply(a, b);
     assert.deepEqual(result.shape, [3, 1]);
     assert.deepEqual(toArray(result), [3, 6, 9]);
+  });
+
+  it('subtract performs elementwise subtraction', () => {
+    const a = array([5, 7, 9], [3, 1]);
+    const b = array([2, 3, 4], [3, 1]);
+    const result = subtract(a, b);
+    assert.deepEqual(result.shape, [3, 1]);
+    assert.deepEqual(toArray(result), [3, 4, 5]);
+  });
+
+  it('subtract supports array - scalar', () => {
+    const a = array([10, 20, 30], [3, 1]);
+    const b = 5;
+    const result = subtract(a, b);
+    assert.deepEqual(result.shape, [3, 1]);
+    assert.deepEqual(toArray(result), [5, 15, 25]);
+  });
+
+  it('subtract supports scalar - array', () => {
+    const a = 10;
+    const b = array([1, 2, 3], [3, 1]);
+    const result = subtract(a, b);
+    assert.deepEqual(result.shape, [3, 1]);
+    assert.deepEqual(toArray(result), [9, 8, 7]);
+  });
+
+  it('subtract supports scalar - scalar', () => {
+    const result = subtract(10, 3);
+    assert.deepEqual(result.shape, []);
+    assert.deepEqual(toArray(result), 7);
   });
 
   it('where selects values elementwise', () => {
