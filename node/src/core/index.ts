@@ -66,6 +66,7 @@ import {
   swapaxes,
   add,
   multiply,
+  subtract,
   where,
   arange,
   tan,
@@ -113,7 +114,7 @@ export {
   streamContext as stream,
   withStream,
 };
-export { reshape, transpose, moveaxis, swapaxes, add, multiply, where, arange, tan, square };
+export { reshape, transpose, moveaxis, swapaxes, add, multiply, subtract, where, arange, tan, square };
 export {
   dtypeModule as dtype,
   Dtype,
@@ -175,6 +176,7 @@ const core = {
   swapaxes,
   add,
   multiply,
+  subtract,
   where,
   tan,
   square,

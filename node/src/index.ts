@@ -33,6 +33,7 @@ export const moveaxis = core.moveaxis;
 export const swapaxes = core.swapaxes;
 export const add = core.add;
 export const multiply = core.multiply;
+export const subtract = core.subtract;
 export const where = core.where;
 export const arange = core.arange;
 export const tan = core.tan;
@@ -85,6 +86,7 @@ export default {
   swapaxes,
   add,
   multiply,
+  subtract,
   where,
   tan,
   square,

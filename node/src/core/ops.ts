@@ -137,7 +137,7 @@ function toNativeScalarOrArray(value: ScalarOrArray): any {
 }
 
 function binaryOp(
-  name: 'add' | 'multiply',
+  name: 'add' | 'multiply' | 'subtract',
   a: ScalarOrArray,
   b: ScalarOrArray,
   options?: BinaryOpOptions,
@@ -158,6 +158,14 @@ export function multiply(
   options?: BinaryOpOptions,
 ): MLXArray {
   return binaryOp('multiply', a, b, options);
+}
+
+export function subtract(
+  a: ScalarOrArray,
+  b: ScalarOrArray,
+  options?: BinaryOpOptions,
+): MLXArray {
+  return binaryOp('subtract', a, b, options);
 }
 
 export interface WhereOptions extends StreamOptions {}
