@@ -37,6 +37,7 @@ export const subtract = core.subtract;
 export const where = core.where;
 export const arange = core.arange;
 export const tan = core.tan;
+export const rsqrt = core.rsqrt;
 export const square = core.square;
 export const sign = core.sign;
 
@@ -90,6 +91,7 @@ export default {
   subtract,
   where,
   tan,
+  rsqrt,
   square,
   sign,
   bool,

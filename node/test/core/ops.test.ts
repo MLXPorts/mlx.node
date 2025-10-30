@@ -169,6 +169,27 @@ describe('core ops', () => {
     assert.ok(Math.abs(value as number) < 1e-5);
   });
 
+  it('rsqrt computes element-wise reciprocal square root', () => {
+    const a = array([1, 4, 9, 16], [4, 1]);
+    const result = mlx.core.rsqrt(a);
+    assert.deepEqual(result.shape, [4, 1]);
+    const values = toArray(result);
+    // rsqrt(1) = 1/sqrt(1) = 1
+    assert.ok(Math.abs(values[0] - 1) < 1e-5);
+    // rsqrt(4) = 1/sqrt(4) = 0.5
+    assert.ok(Math.abs(values[1] - 0.5) < 1e-5);
+    // rsqrt(9) = 1/sqrt(9) ≈ 0.333
+    assert.ok(Math.abs(values[2] - 1/3) < 1e-5);
+    // rsqrt(16) = 1/sqrt(16) = 0.25
+    assert.ok(Math.abs(values[3] - 0.25) < 1e-5);
+  });
+
+  it('rsqrt supports scalar input', () => {
+    const result = mlx.core.rsqrt(4);
+    assert.deepEqual(result.shape, []);
+    const value = toArray(result);
+    // rsqrt(4) = 1/sqrt(4) = 0.5
+    assert.ok(Math.abs((value as number) - 0.5) < 1e-5);
   it('square computes element-wise square', () => {
     const a = array([1, 2, 3, 4], [4, 1]);
     const result = mlx.core.square(a);

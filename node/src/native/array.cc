@@ -2124,6 +2124,29 @@ Napi::Value Tan(const Napi::CallbackInfo& info) {
   return WrapArray(env, tensor);
 }
 
+Napi::Value Rsqrt(const Napi::CallbackInfo& info) {
+  auto env = info.Env();
+  if (info.Length() < 1) {
+    Napi::TypeError::New(env, "rsqrt expects at least one argument")
+        .ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
+  auto a = ToArray(env, info[0]);
+  if (env.IsExceptionPending()) {
+    return env.Null();
+  }
+
+  auto streamArg = GetStreamArgument(info, 1);
+  if (env.IsExceptionPending()) {
+    return env.Null();
+  }
+
+  auto tensor =
+      std::make_shared<mlx::core::array>(mlx::core::rsqrt(a, streamArg));
+  return WrapArray(env, tensor);
+}
+
 Napi::Value Square(const Napi::CallbackInfo& info) {
   auto env = info.Env();
   if (info.Length() < 1) {
@@ -2300,6 +2323,7 @@ Napi::Object Init(Napi::Env env, Napi::Object exports) {
   core.Set("matmul", Napi::Function::New(env, Matmul, "matmul", &data));
   core.Set("where", Napi::Function::New(env, Where, "where", &data));
   core.Set("tan", Napi::Function::New(env, Tan, "tan", &data));
+  core.Set("rsqrt", Napi::Function::New(env, Rsqrt, "rsqrt", &data));
   core.Set("square", Napi::Function::New(env, Square, "square", &data));
   core.Set("sign", Napi::Function::New(env, Sign, "sign", &data));
 
