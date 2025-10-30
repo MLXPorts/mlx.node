@@ -36,6 +36,7 @@ export const multiply = core.multiply;
 export const where = core.where;
 export const arange = core.arange;
 export const tan = core.tan;
+export const square = core.square;
 
 // Export dtype constants
 export const bool = core.bool;
@@ -86,6 +87,7 @@ export default {
   multiply,
   where,
   tan,
+  square,
   bool,
   int8,
   int16,
