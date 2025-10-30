@@ -199,6 +199,9 @@ export function rsqrt(a: ScalarOrArray, options?: UnaryOpOptions): MLXArray {
   const args: any[] = [toNativeScalarOrArray(a)];
   appendStreamArg(args, options?.stream);
   const handle = addon.rsqrt(...args);
+  return MLXArray.fromHandle(handle);
+}
+
 export function square(a: ScalarOrArray, options?: UnaryOpOptions): MLXArray {
   const args: any[] = [toNativeScalarOrArray(a)];
   appendStreamArg(args, options?.stream);

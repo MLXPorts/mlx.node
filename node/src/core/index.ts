@@ -116,7 +116,7 @@ export {
   streamContext as stream,
   withStream,
 };
-export { reshape, transpose, moveaxis, swapaxes, add, multiply, subtract, where, arange, tan, rsqrt };
+export { reshape, transpose, moveaxis, swapaxes, add, multiply, subtract, where, arange, tan, rsqrt, square, sign };
 export {
   dtypeModule as dtype,
   Dtype,

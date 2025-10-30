@@ -2128,6 +2128,25 @@ Napi::Value Rsqrt(const Napi::CallbackInfo& info) {
   auto env = info.Env();
   if (info.Length() < 1) {
     Napi::TypeError::New(env, "rsqrt expects at least one argument")
+        .ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
+  auto a = ToArray(env, info[0]);
+  if (env.IsExceptionPending()) {
+    return env.Null();
+  }
+
+  auto streamArg = GetStreamArgument(info, 1);
+  if (env.IsExceptionPending()) {
+    return env.Null();
+  }
+
+  auto tensor =
+      std::make_shared<mlx::core::array>(mlx::core::rsqrt(a, streamArg));
+  return WrapArray(env, tensor);
+}
+
 Napi::Value Square(const Napi::CallbackInfo& info) {
   auto env = info.Env();
   if (info.Length() < 1) {
@@ -2147,7 +2166,6 @@ Napi::Value Square(const Napi::CallbackInfo& info) {
   }
 
   auto tensor =
-      std::make_shared<mlx::core::array>(mlx::core::rsqrt(a, streamArg));
       std::make_shared<mlx::core::array>(mlx::core::square(a, streamArg));
   return WrapArray(env, tensor);
 }
