@@ -202,6 +202,13 @@ export function square(a: ScalarOrArray, options?: UnaryOpOptions): MLXArray {
   return MLXArray.fromHandle(handle);
 }
 
+export function sign(a: ScalarOrArray, options?: UnaryOpOptions): MLXArray {
+  const args: any[] = [toNativeScalarOrArray(a)];
+  appendStreamArg(args, options?.stream);
+  const handle = addon.sign(...args);
+  return MLXArray.fromHandle(handle);
+}
+
 export interface ArangeOptions extends StreamOptions {
   dtype?: any;
 }

@@ -38,6 +38,7 @@ export const where = core.where;
 export const arange = core.arange;
 export const tan = core.tan;
 export const square = core.square;
+export const sign = core.sign;
 
 // Export dtype constants
 export const bool = core.bool;
@@ -90,6 +91,7 @@ export default {
   where,
   tan,
   square,
+  sign,
   bool,
   int8,
   int16,

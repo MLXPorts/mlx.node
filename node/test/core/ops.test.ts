@@ -189,6 +189,49 @@ describe('core ops', () => {
     assert.deepEqual(toArray(result), [4, 1, 0, 1, 4]);
   });
 
+  it('sign computes element-wise sign', () => {
+    const a = array([-5, -2, 0, 3, 7], [5, 1]);
+    const result = mlx.core.sign(a);
+    assert.deepEqual(result.shape, [5, 1]);
+    const values = toArray(result);
+    // sign(-5) = -1
+    assert.equal(values[0], -1);
+    // sign(-2) = -1
+    assert.equal(values[1], -1);
+    // sign(0) = 0
+    assert.equal(values[2], 0);
+    // sign(3) = 1
+    assert.equal(values[3], 1);
+    // sign(7) = 1
+    assert.equal(values[4], 1);
+  });
+
+  it('sign supports scalar input', () => {
+    const negResult = mlx.core.sign(-5);
+    assert.deepEqual(negResult.shape, []);
+    assert.equal(toArray(negResult) as number, -1);
+
+    const zeroResult = mlx.core.sign(0);
+    assert.deepEqual(zeroResult.shape, []);
+    assert.equal(toArray(zeroResult) as number, 0);
+
+    const posResult = mlx.core.sign(10);
+    assert.deepEqual(posResult.shape, []);
+    assert.equal(toArray(posResult) as number, 1);
+  });
+
+  it('sign handles floating point numbers', () => {
+    const a = array([-3.14, -0.5, 0.0, 0.5, 2.71], [5, 1]);
+    const result = mlx.core.sign(a);
+    assert.deepEqual(result.shape, [5, 1]);
+    const values = toArray(result);
+    assert.equal(values[0], -1);
+    assert.equal(values[1], -1);
+    assert.equal(values[2], 0);
+    assert.equal(values[3], 1);
+    assert.equal(values[4], 1);
+  });
+
   it('operations respect explicit streams', async () => {
     const stream = newStream();
     await withStream(stream, () => {
