@@ -37,6 +37,7 @@ export const subtract = core.subtract;
 export const where = core.where;
 export const arange = core.arange;
 export const tan = core.tan;
+export const square = core.square;
 export const sign = core.sign;
 
 // Export dtype constants
@@ -89,6 +90,7 @@ export default {
   subtract,
   where,
   tan,
+  square,
   sign,
   bool,
   int8,

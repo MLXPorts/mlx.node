@@ -169,6 +169,26 @@ describe('core ops', () => {
     assert.ok(Math.abs(value as number) < 1e-5);
   });
 
+  it('square computes element-wise square', () => {
+    const a = array([1, 2, 3, 4], [4, 1]);
+    const result = mlx.core.square(a);
+    assert.deepEqual(result.shape, [4, 1]);
+    assert.deepEqual(toArray(result), [1, 4, 9, 16]);
+  });
+
+  it('square supports scalar input', () => {
+    const result = mlx.core.square(5);
+    assert.deepEqual(result.shape, []);
+    assert.deepEqual(toArray(result), 25);
+  });
+
+  it('square handles negative values', () => {
+    const a = array([-2, -1, 0, 1, 2], [5, 1]);
+    const result = mlx.core.square(a);
+    assert.deepEqual(result.shape, [5, 1]);
+    assert.deepEqual(toArray(result), [4, 1, 0, 1, 4]);
+  });
+
   it('sign computes element-wise sign', () => {
     const a = array([-5, -2, 0, 3, 7], [5, 1]);
     const result = mlx.core.sign(a);
