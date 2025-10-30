@@ -44,7 +44,8 @@ Reference source map: see `PORTING_PLAN.md` for the list of upstream C++ and Pyt
 - [x] Base `Optimizer` class with state management and tree-based parameter handling.
 - [x] `SGD` optimizer (structure and validation complete, blocked on missing core ops).
 - [ ] Complete `SGD.applySingle()` implementation (requires subtract, scalar ops, astype).
-- [ ] Add `Adam` optimizer.
+- [x] Add `Adam` optimizer (structure and validation complete, blocked on missing core ops).
+- [ ] Complete `Adam.applySingle()` implementation (requires subtract, divide, square, sqrt, rsqrt, power).
 - [ ] Add `AdamW` optimizer.
 - [ ] Add `RMSprop` optimizer.
 - [ ] Add `Adagrad` optimizer.

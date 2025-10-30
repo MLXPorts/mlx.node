@@ -322,7 +322,138 @@ export class SGD extends Optimizer {
   }
 }
 
+/**
+ * Adam Optimizer Options
+ */
+export interface AdamOptions {
+  /** The learning rate */
+  learningRate: SchedulableParam;
+  /** The coefficients (β₁, β₂) used for computing running averages of gradient and its square (default: [0.9, 0.999]) */
+  betas?: [number, number];
+  /** The term ε added to the denominator to improve numerical stability (default: 1e-8) */
+  eps?: number;
+  /** If true, bias correction is applied (default: false) */
+  biasCorrection?: boolean;
+}
+
+/**
+ * The Adam optimizer.
+ * 
+ * Implements the Adam algorithm from "Adam: A Method for Stochastic Optimization" (Kingma & Ba, 2015).
+ * 
+ * The algorithm updates parameters as follows:
+ * 
+ *   m_{t+1} = β₁ * m_t + (1 - β₁) * g_t
+ *   v_{t+1} = β₂ * v_t + (1 - β₂) * g_t²
+ *   w_{t+1} = w_t - λ * m_{t+1} / (√v_{t+1} + ε)
+ * 
+ * where λ is the learning rate, m_t and v_t are the first and second moment estimates,
+ * g_t is the gradient, and ε is a small constant for numerical stability.
+ * 
+ * @example
+ * ```typescript
+ * const optimizer = new Adam({ learningRate: 0.001 });
+ * // ... during training:
+ * // const updatedParams = optimizer.applyGradients(gradients, parameters);
+ * ```
+ */
+export class Adam extends Optimizer {
+  betas: [number, number];
+  eps: number;
+  biasCorrection: boolean;
+
+  constructor(options: AdamOptions) {
+    super();
+
+    const { 
+      learningRate, 
+      betas = [0.9, 0.999], 
+      eps = 1e-8, 
+      biasCorrection = false 
+    } = options;
+
+    this._maybeSchedule('learning_rate', learningRate);
+    this.betas = betas;
+    this.eps = eps;
+    this.biasCorrection = biasCorrection;
+  }
+
+  protected initSingle(parameter: MLXArray, state: Record<string, any>): void {
+    // Initialize first moment (m) and second moment (v) with zeros_like
+    state.m = zeros_like(parameter);
+    state.v = zeros_like(parameter);
+  }
+
+  protected applySingle(
+    gradient: MLXArray,
+    parameter: MLXArray,
+    state: Record<string, any>
+  ): MLXArray {
+    // Note: This is a simplified implementation that demonstrates the structure.
+    // The full implementation requires additional operations that are not yet
+    // available in the Node.js bindings:
+    // - Subtraction operator
+    // - Division operator  
+    // - square() for computing g²
+    // - sqrt() for computing √v
+    // - rsqrt() for bias correction
+    // - Power operator for computing β^step
+    // - astype() for dtype conversion
+    //
+    // This code will need to be updated once those operations are available.
+    
+    throw new Error(
+      'Adam.applySingle is not yet fully implemented. ' +
+      'This requires additional core operations (subtract, divide, square, sqrt, rsqrt, power) ' +
+      'that are not yet available in the Node.js MLX bindings.'
+    );
+
+    // This is what the implementation should look like once operations are available:
+    /*
+    const lr = this.learningRate; // Would need .astype(gradient.dtype)
+    const [b1, b2] = this.betas;
+    const eps = this.eps;
+    const biasCorrection = this.biasCorrection;
+    const step = this.step;
+
+    // Get moments from state
+    let m = state.m;
+    let v = state.v;
+
+    // Update biased first moment estimate: m = β₁ * m + (1 - β₁) * g
+    m = add(multiply(b1, m), multiply(1 - b1, gradient));
+    
+    // Update biased second moment estimate: v = β₂ * v + (1 - β₂) * g²
+    v = add(multiply(b2, v), multiply(1 - b2, square(gradient)));
+    
+    // Store updated moments
+    state.m = m;
+    state.v = v;
+
+    if (biasCorrection) {
+      // Compute bias-corrected learning rate: lr / (1 - β₁^step)
+      const c1 = divide(lr, subtract(1, power(b1, step))); // .astype(gradient.dtype)
+      
+      // Compute bias correction for second moment: 1 / √(1 - β₂^step)
+      const c2 = rsqrt(subtract(1, power(b2, step))); // .astype(gradient.dtype)
+      
+      // Compute update: c1 * m / (√v * c2 + ε)
+      const numerator = multiply(c1, m);
+      const denominator = add(multiply(sqrt(v), c2), eps);
+      const update = divide(numerator, denominator);
+      
+      return subtract(parameter, update);
+    } else {
+      // Compute update without bias correction: lr * m / (√v + ε)
+      const update = divide(multiply(lr, m), add(sqrt(v), eps));
+      return subtract(parameter, update);
+    }
+    */
+  }
+}
+
 export default {
   Optimizer,
   SGD,
+  Adam,
 };

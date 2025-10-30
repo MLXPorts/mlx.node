@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
-import { SGD, Optimizer } from '../src/optimizers';
+import { SGD, Adam, Optimizer } from '../src/optimizers';
 import { zeros } from '../src/core/array';
 
 describe('mlx.optimizers', () => {
@@ -126,5 +126,89 @@ describe('mlx.optimizers', () => {
       assert.deepStrictEqual(optimizer.state, newState);
       assert.strictEqual((optimizer as any)._initialized, false);
     });
+  });
+
+  describe('mlx.optimizers.Adam', () => {
+    it('should create Adam optimizer with learning rate', () => {
+      const optimizer = new Adam({ learningRate: 0.001 });
+      assert.ok(optimizer instanceof Optimizer);
+      assert.ok(optimizer instanceof Adam);
+      assert.deepStrictEqual(optimizer.betas, [0.9, 0.999]);
+      assert.strictEqual(optimizer.eps, 1e-8);
+      assert.strictEqual(optimizer.biasCorrection, false);
+    });
+
+    it('should create Adam optimizer with custom betas', () => {
+      const optimizer = new Adam({ 
+        learningRate: 0.001, 
+        betas: [0.95, 0.9999] 
+      });
+      assert.deepStrictEqual(optimizer.betas, [0.95, 0.9999]);
+    });
+
+    it('should create Adam optimizer with custom epsilon', () => {
+      const optimizer = new Adam({ 
+        learningRate: 0.001, 
+        eps: 1e-7 
+      });
+      assert.strictEqual(optimizer.eps, 1e-7);
+    });
+
+    it('should create Adam optimizer with bias correction enabled', () => {
+      const optimizer = new Adam({ 
+        learningRate: 0.001, 
+        biasCorrection: true 
+      });
+      assert.strictEqual(optimizer.biasCorrection, true);
+    });
+
+    it('should have learning rate in state', () => {
+      const optimizer = new Adam({ learningRate: 0.001 });
+      const lr = optimizer.learningRate;
+      assert.ok(lr);
+      // Check that it's an MLXArray
+      assert.ok(lr.toTypedArray !== undefined);
+    });
+
+    it('should initialize state for parameters', () => {
+      const optimizer = new Adam({ learningRate: 0.001 });
+      const params = {
+        weight: zeros([3]),
+        bias: zeros([1])
+      };
+      
+      optimizer.init(params);
+      
+      // Check that state was initialized
+      assert.ok(optimizer.state);
+      assert.ok('step' in optimizer.state);
+      assert.ok('learning_rate' in optimizer.state);
+      assert.ok('weight' in optimizer.state);
+      assert.ok('bias' in optimizer.state);
+      
+      // Check that moment estimates were initialized
+      assert.ok('m' in optimizer.state.weight);
+      assert.ok('v' in optimizer.state.weight);
+      assert.ok('m' in optimizer.state.bias);
+      assert.ok('v' in optimizer.state.bias);
+    });
+
+    it('should track step count', () => {
+      const optimizer = new Adam({ learningRate: 0.001 });
+      const step = optimizer.step;
+      assert.ok(step);
+      assert.strictEqual(step.toTypedArray()[0], 0);
+    });
+
+    it('should allow setting learning rate', () => {
+      const optimizer = new Adam({ learningRate: 0.001 });
+      optimizer.learningRate = 0.0001;
+      // Note: This test is placeholder since we can't properly set scalar values yet
+      assert.ok(optimizer.learningRate);
+    });
+
+    // Note: applyGradients tests are not included yet because they would fail
+    // due to missing core operations (subtract, divide, square, sqrt, rsqrt, power)
+    // These should be added once those operations are available
   });
 });
