@@ -7,6 +7,7 @@ import mlx, {
   swapaxes,
   add,
   multiply,
+  subtract,
   where,
   arange,
   newStream,
@@ -109,6 +110,36 @@ describe('core ops', () => {
     assert.deepEqual(toArray(result), [3, 6, 9]);
   });
 
+  it('subtract performs elementwise subtraction', () => {
+    const a = array([5, 7, 9], [3, 1]);
+    const b = array([2, 3, 4], [3, 1]);
+    const result = subtract(a, b);
+    assert.deepEqual(result.shape, [3, 1]);
+    assert.deepEqual(toArray(result), [3, 4, 5]);
+  });
+
+  it('subtract supports array - scalar', () => {
+    const a = array([10, 20, 30], [3, 1]);
+    const b = 5;
+    const result = subtract(a, b);
+    assert.deepEqual(result.shape, [3, 1]);
+    assert.deepEqual(toArray(result), [5, 15, 25]);
+  });
+
+  it('subtract supports scalar - array', () => {
+    const a = 10;
+    const b = array([1, 2, 3], [3, 1]);
+    const result = subtract(a, b);
+    assert.deepEqual(result.shape, [3, 1]);
+    assert.deepEqual(toArray(result), [9, 8, 7]);
+  });
+
+  it('subtract supports scalar - scalar', () => {
+    const result = subtract(10, 3);
+    assert.deepEqual(result.shape, []);
+    assert.deepEqual(toArray(result), 7);
+  });
+
   it('where selects values elementwise', () => {
     const condition = array([1, 0, 1, 0], [4, 1]);
     const x = array([10, 20, 30, 40], [4, 1]);
@@ -136,6 +167,49 @@ describe('core ops', () => {
     assert.deepEqual(result.shape, []);
     const value = toArray(result);
     assert.ok(Math.abs(value as number) < 1e-5);
+  });
+
+  it('rsqrt computes element-wise reciprocal square root', () => {
+    const a = array([1, 4, 9, 16], [4, 1]);
+    const result = mlx.core.rsqrt(a);
+    assert.deepEqual(result.shape, [4, 1]);
+    const values = toArray(result);
+    // rsqrt(1) = 1/sqrt(1) = 1
+    assert.ok(Math.abs(values[0] - 1) < 1e-5);
+    // rsqrt(4) = 1/sqrt(4) = 0.5
+    assert.ok(Math.abs(values[1] - 0.5) < 1e-5);
+    // rsqrt(9) = 1/sqrt(9) ≈ 0.333
+    assert.ok(Math.abs(values[2] - 1/3) < 1e-5);
+    // rsqrt(16) = 1/sqrt(16) = 0.25
+    assert.ok(Math.abs(values[3] - 0.25) < 1e-5);
+  });
+
+  it('rsqrt supports scalar input', () => {
+    const result = mlx.core.rsqrt(4);
+    assert.deepEqual(result.shape, []);
+    const value = toArray(result);
+    // rsqrt(4) = 1/sqrt(4) = 0.5
+    assert.ok(Math.abs((value as number) - 0.5) < 1e-5);
+  });
+
+  it('square computes element-wise square', () => {
+    const a = array([1, 2, 3, 4], [4, 1]);
+    const result = mlx.core.square(a);
+    assert.deepEqual(result.shape, [4, 1]);
+    assert.deepEqual(toArray(result), [1, 4, 9, 16]);
+  });
+
+  it('square supports scalar input', () => {
+    const result = mlx.core.square(5);
+    assert.deepEqual(result.shape, []);
+    assert.deepEqual(toArray(result), 25);
+  });
+
+  it('square handles negative values', () => {
+    const a = array([-2, -1, 0, 1, 2], [5, 1]);
+    const result = mlx.core.square(a);
+    assert.deepEqual(result.shape, [5, 1]);
+    assert.deepEqual(toArray(result), [4, 1, 0, 1, 4]);
   });
 
   it('sign computes element-wise sign', () => {
