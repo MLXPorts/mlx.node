@@ -190,6 +190,8 @@ describe('core ops', () => {
     const value = toArray(result);
     // rsqrt(4) = 1/sqrt(4) = 0.5
     assert.ok(Math.abs((value as number) - 0.5) < 1e-5);
+  });
+
   it('square computes element-wise square', () => {
     const a = array([1, 2, 3, 4], [4, 1]);
     const result = mlx.core.square(a);
