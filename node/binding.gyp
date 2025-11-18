@@ -113,7 +113,7 @@
           ],
           "action": [
             "bash", "-lc",
-            "./scripts/gen_mlx_metal_jit.sh '<(module_root_dir)/..' '<(module_root_dir)/generated/jit' \"$CC\""
+            "./scripts/gen_mlx_metal_jit.sh '<(module_root_dir)/..' '<(module_root_dir)/generated/jit' '/usr/bin/clang'"
           ]
         }
       ]

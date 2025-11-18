@@ -34,12 +34,32 @@ export const swapaxes = core.swapaxes;
 export const add = core.add;
 export const multiply = core.multiply;
 export const subtract = core.subtract;
+export const divide = core.divide;
+export const power = core.power;
+export const equal = core.equal;
+export const not_equal = core.not_equal;
+export const less = core.less;
+export const less_equal = core.less_equal;
+export const greater = core.greater;
+export const greater_equal = core.greater_equal;
+export const maximum = core.maximum;
+export const minimum = core.minimum;
 export const where = core.where;
 export const arange = core.arange;
 export const tan = core.tan;
+export const sin = core.sin;
+export const cos = core.cos;
+export const arcsin = core.arcsin;
+export const arccos = core.arccos;
+export const arctan = core.arctan;
+export const arctan2 = core.arctan2;
 export const rsqrt = core.rsqrt;
 export const square = core.square;
 export const sign = core.sign;
+export const abs = core.abs;
+export const sqrt = core.sqrt;
+export const exp = core.exp;
+export const log = core.log;
 
 // Export dtype constants
 export const bool = core.bool;
@@ -89,11 +109,31 @@ export default {
   add,
   multiply,
   subtract,
+  divide,
+  power,
+  equal,
+  not_equal,
+  less,
+  less_equal,
+  greater,
+  greater_equal,
+  maximum,
+  minimum,
   where,
   tan,
+  sin,
+  cos,
+  arcsin,
+  arccos,
+  arctan,
+  arctan2,
   rsqrt,
   square,
   sign,
+  abs,
+  sqrt,
+  exp,
+  log,
   bool,
   int8,
   int16,

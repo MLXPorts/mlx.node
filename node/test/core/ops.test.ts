@@ -8,6 +8,16 @@ import mlx, {
   add,
   multiply,
   subtract,
+  divide,
+  power,
+  equal,
+  not_equal,
+  less,
+  less_equal,
+  greater,
+  greater_equal,
+  maximum,
+  minimum,
   where,
   arange,
   newStream,
@@ -17,6 +27,10 @@ import mlx, {
   int32,
   int64,
   uint32,
+  abs,
+  sqrt,
+  exp,
+  log,
 } from '../../src';
 
 const toArray = (tensor: ReturnType<typeof array>): number[] => tensor.toArray() as number[];
@@ -166,7 +180,224 @@ describe('core ops', () => {
     const result = mlx.core.tan(0);
     assert.deepEqual(result.shape, []);
     const value = toArray(result);
-    assert.ok(Math.abs(value as number) < 1e-5);
+    assert.ok(Math.abs(value as unknown as number) < 1e-5);
+  });
+
+  it('abs computes element-wise absolute value', () => {
+    const a = array([-2, -1, 0, 1, 2], [5]);
+    const result = abs(a);
+    assert.deepEqual(result.shape, [5]);
+    assert.deepEqual(toArray(result), [2, 1, 0, 1, 2]);
+  });
+
+  it('abs supports scalar input', () => {
+    const result = abs(-5);
+    assert.deepEqual(result.shape, []);
+    assert.equal(toArray(result), 5);
+  });
+
+  it('sqrt computes element-wise square root', () => {
+    const a = array([0, 1, 4, 9, 16], [5]);
+    const result = sqrt(a);
+    assert.deepEqual(result.shape, [5]);
+    assert.deepEqual(toArray(result), [0, 1, 2, 3, 4]);
+  });
+
+  it('sqrt supports scalar input', () => {
+    const result = sqrt(25);
+    assert.deepEqual(result.shape, []);
+    assert.equal(toArray(result), 5);
+  });
+
+  it('exp computes element-wise exponential', () => {
+    const a = array([0, 1, 2], [3]);
+    const result = exp(a);
+    assert.deepEqual(result.shape, [3]);
+    const values = toArray(result);
+    assert.ok(Math.abs(values[0] - 1) < 1e-5); // e^0 = 1
+    assert.ok(Math.abs(values[1] - Math.E) < 1e-5); // e^1 = e
+    assert.ok(Math.abs(values[2] - Math.E ** 2) < 1e-4); // e^2
+  });
+
+  it('exp supports scalar input', () => {
+    const result = exp(0);
+    assert.deepEqual(result.shape, []);
+    assert.ok(Math.abs((toArray(result) as unknown as number) - 1) < 1e-5);
+  });
+
+  it('log computes element-wise natural logarithm', () => {
+    const a = array([1, Math.E, Math.E ** 2], [3]);
+    const result = log(a);
+    assert.deepEqual(result.shape, [3]);
+    const values = toArray(result);
+    assert.ok(Math.abs(values[0] - 0) < 1e-5); // ln(1) = 0
+    assert.ok(Math.abs(values[1] - 1) < 1e-5); // ln(e) = 1
+    assert.ok(Math.abs(values[2] - 2) < 1e-4); // ln(e^2) = 2
+  });
+
+  it('log supports scalar input', () => {
+    const result = log(1);
+    assert.deepEqual(result.shape, []);
+    assert.ok(Math.abs(toArray(result) as unknown as number) < 1e-5);
+  });
+
+  it('divide performs element-wise division', () => {
+    const a = array([10, 20, 30], [3]);
+    const b = array([2, 4, 5], [3]);
+    const result = divide(a, b);
+    assert.deepEqual(result.shape, [3]);
+    assert.deepEqual(toArray(result), [5, 5, 6]);
+  });
+
+  it('divide supports scalar operations', () => {
+    const a = array([10, 20, 30], [3]);
+    const result = divide(a, 2);
+    assert.deepEqual(result.shape, [3]);
+    assert.deepEqual(toArray(result), [5, 10, 15]);
+  });
+
+  it('power performs element-wise exponentiation', () => {
+    const a = array([2, 3, 4], [3]);
+    const b = array([2, 3, 2], [3]);
+    const result = power(a, b);
+    assert.deepEqual(result.shape, [3]);
+    assert.deepEqual(toArray(result), [4, 27, 16]); // 2^2, 3^3, 4^2
+  });
+
+  it('power supports scalar base', () => {
+    const a = 2;
+    const b = array([1, 2, 3], [3]);
+    const result = power(a, b);
+    assert.deepEqual(result.shape, [3]);
+    assert.deepEqual(toArray(result), [2, 4, 8]); // 2^1, 2^2, 2^3
+  });
+
+  it('power supports scalar exponent', () => {
+    const a = array([2, 3, 4], [3]);
+    const b = 2;
+    const result = power(a, b);
+    assert.deepEqual(result.shape, [3]);
+    assert.deepEqual(toArray(result), [4, 9, 16]); // 2^2, 3^2, 4^2
+  });
+
+  it('equal performs element-wise equality comparison', () => {
+    const a = array([1, 2, 3, 4], [4]);
+    const b = array([1, 0, 3, 0], [4]);
+    const result = equal(a, b);
+    assert.deepEqual(result.shape, [4]);
+    assert.deepEqual(toArray(result), [1, 0, 1, 0]); // true=1, false=0
+  });
+
+  it('equal supports scalar operations', () => {
+    const a = array([1, 2, 3], [3]);
+    const result = equal(a, 2);
+    assert.deepEqual(result.shape, [3]);
+    assert.deepEqual(toArray(result), [0, 1, 0]);
+  });
+
+  it('not_equal performs element-wise inequality comparison', () => {
+    const a = array([1, 2, 3, 4], [4]);
+    const b = array([1, 0, 3, 0], [4]);
+    const result = not_equal(a, b);
+    assert.deepEqual(result.shape, [4]);
+    assert.deepEqual(toArray(result), [0, 1, 0, 1]); // true=1, false=0
+  });
+
+  it('not_equal supports scalar operations', () => {
+    const a = array([1, 2, 3], [3]);
+    const result = not_equal(a, 2);
+    assert.deepEqual(result.shape, [3]);
+    assert.deepEqual(toArray(result), [1, 0, 1]);
+  });
+
+  it('less performs element-wise less-than comparison', () => {
+    const a = array([1, 2, 3, 4], [4]);
+    const b = array([2, 2, 2, 2], [4]);
+    const result = less(a, b);
+    assert.deepEqual(result.shape, [4]);
+    assert.deepEqual(toArray(result), [1, 0, 0, 0]); // 1<2, 2<2, 3<2, 4<2
+  });
+
+  it('less supports scalar operations', () => {
+    const a = array([1, 2, 3], [3]);
+    const result = less(a, 2);
+    assert.deepEqual(result.shape, [3]);
+    assert.deepEqual(toArray(result), [1, 0, 0]);
+  });
+
+  it('less_equal performs element-wise less-than-or-equal comparison', () => {
+    const a = array([1, 2, 3, 4], [4]);
+    const b = array([2, 2, 2, 2], [4]);
+    const result = less_equal(a, b);
+    assert.deepEqual(result.shape, [4]);
+    assert.deepEqual(toArray(result), [1, 1, 0, 0]); // 1<=2, 2<=2, 3<=2, 4<=2
+  });
+
+  it('less_equal supports scalar operations', () => {
+    const a = array([1, 2, 3], [3]);
+    const result = less_equal(a, 2);
+    assert.deepEqual(result.shape, [3]);
+    assert.deepEqual(toArray(result), [1, 1, 0]);
+  });
+
+  it('greater performs element-wise greater-than comparison', () => {
+    const a = array([1, 2, 3, 4], [4]);
+    const b = array([2, 2, 2, 2], [4]);
+    const result = greater(a, b);
+    assert.deepEqual(result.shape, [4]);
+    assert.deepEqual(toArray(result), [0, 0, 1, 1]); // 1>2, 2>2, 3>2, 4>2
+  });
+
+  it('greater supports scalar operations', () => {
+    const a = array([1, 2, 3], [3]);
+    const result = greater(a, 2);
+    assert.deepEqual(result.shape, [3]);
+    assert.deepEqual(toArray(result), [0, 0, 1]);
+  });
+
+  it('greater_equal performs element-wise greater-than-or-equal comparison', () => {
+    const a = array([1, 2, 3, 4], [4]);
+    const b = array([2, 2, 2, 2], [4]);
+    const result = greater_equal(a, b);
+    assert.deepEqual(result.shape, [4]);
+    assert.deepEqual(toArray(result), [0, 1, 1, 1]); // 1>=2, 2>=2, 3>=2, 4>=2
+  });
+
+  it('greater_equal supports scalar operations', () => {
+    const a = array([1, 2, 3], [3]);
+    const result = greater_equal(a, 2);
+    assert.deepEqual(result.shape, [3]);
+    assert.deepEqual(toArray(result), [0, 1, 1]);
+  });
+
+  it('maximum performs element-wise maximum', () => {
+    const a = array([1, 5, 3], [3]);
+    const b = array([4, 2, 6], [3]);
+    const result = maximum(a, b);
+    assert.deepEqual(result.shape, [3]);
+    assert.deepEqual(toArray(result), [4, 5, 6]); // max(1,4), max(5,2), max(3,6)
+  });
+
+  it('maximum supports scalar operations', () => {
+    const a = array([1, 2, 3], [3]);
+    const result = maximum(a, 2);
+    assert.deepEqual(result.shape, [3]);
+    assert.deepEqual(toArray(result), [2, 2, 3]);
+  });
+
+  it('minimum performs element-wise minimum', () => {
+    const a = array([1, 5, 3], [3]);
+    const b = array([4, 2, 6], [3]);
+    const result = minimum(a, b);
+    assert.deepEqual(result.shape, [3]);
+    assert.deepEqual(toArray(result), [1, 2, 3]); // min(1,4), min(5,2), min(3,6)
+  });
+
+  it('minimum supports scalar operations', () => {
+    const a = array([1, 2, 3], [3]);
+    const result = minimum(a, 2);
+    assert.deepEqual(result.shape, [3]);
+    assert.deepEqual(toArray(result), [1, 2, 2]);
   });
 
   it('rsqrt computes element-wise reciprocal square root', () => {

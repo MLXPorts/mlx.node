@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
-import { SGD, Adam, Optimizer } from '../src/optimizers';
+import { SGD, Adam, Lion, Optimizer } from '../src/optimizers';
 import { zeros } from '../src/core/array';
 
 describe('mlx.optimizers', () => {
@@ -139,25 +139,25 @@ describe('mlx.optimizers', () => {
     });
 
     it('should create Adam optimizer with custom betas', () => {
-      const optimizer = new Adam({ 
-        learningRate: 0.001, 
-        betas: [0.95, 0.9999] 
+      const optimizer = new Adam({
+        learningRate: 0.001,
+        betas: [0.95, 0.9999]
       });
       assert.deepStrictEqual(optimizer.betas, [0.95, 0.9999]);
     });
 
     it('should create Adam optimizer with custom epsilon', () => {
-      const optimizer = new Adam({ 
-        learningRate: 0.001, 
-        eps: 1e-7 
+      const optimizer = new Adam({
+        learningRate: 0.001,
+        eps: 1e-7
       });
       assert.strictEqual(optimizer.eps, 1e-7);
     });
 
     it('should create Adam optimizer with bias correction enabled', () => {
-      const optimizer = new Adam({ 
-        learningRate: 0.001, 
-        biasCorrection: true 
+      const optimizer = new Adam({
+        learningRate: 0.001,
+        biasCorrection: true
       });
       assert.strictEqual(optimizer.biasCorrection, true);
     });
@@ -176,16 +176,16 @@ describe('mlx.optimizers', () => {
         weight: zeros([3]),
         bias: zeros([1])
       };
-      
+
       optimizer.init(params);
-      
+
       // Check that state was initialized
       assert.ok(optimizer.state);
       assert.ok('step' in optimizer.state);
       assert.ok('learning_rate' in optimizer.state);
       assert.ok('weight' in optimizer.state);
       assert.ok('bias' in optimizer.state);
-      
+
       // Check that moment estimates were initialized
       assert.ok('m' in optimizer.state.weight);
       assert.ok('v' in optimizer.state.weight);
@@ -210,5 +210,50 @@ describe('mlx.optimizers', () => {
     // Note: applyGradients tests are not included yet because they would fail
     // due to missing core operations (subtract, divide, square, sqrt, rsqrt, power)
     // These should be added once those operations are available
+  });
+
+  describe('Lion', () => {
+    it('should create Lion optimizer with learning rate', () => {
+      const optimizer = new Lion({ learningRate: 0.0001 });
+      assert.ok(optimizer instanceof Optimizer);
+      assert.ok(optimizer instanceof Lion);
+      assert.deepStrictEqual(optimizer.betas, [0.9, 0.99]);
+      assert.strictEqual(optimizer.weightDecay, 0);
+    });
+
+    it('should allow custom betas', () => {
+      const optimizer = new Lion({ learningRate: 0.0001, betas: [0.95, 0.999] });
+      assert.deepStrictEqual(optimizer.betas, [0.95, 0.999]);
+    });
+
+    it('should allow weight decay', () => {
+      const optimizer = new Lion({ learningRate: 0.0001, weightDecay: 0.01 });
+      assert.strictEqual(optimizer.weightDecay, 0.01);
+    });
+
+    it('should initialize state for parameters', () => {
+      const optimizer = new Lion({ learningRate: 0.0001 });
+      const params = {
+        weight: zeros([3]),
+        bias: zeros([1]),
+      };
+
+      optimizer.init(params);
+
+      assert.ok(optimizer.state);
+      assert.ok('step' in optimizer.state);
+      assert.ok('learning_rate' in optimizer.state);
+      assert.ok('weight' in optimizer.state);
+      assert.ok('bias' in optimizer.state);
+      assert.ok('m' in optimizer.state.weight);
+      assert.ok('m' in optimizer.state.bias);
+    });
+
+    it('should track step count', () => {
+      const optimizer = new Lion({ learningRate: 0.0001 });
+      const step = optimizer.step;
+      assert.ok(step);
+      assert.strictEqual(step.toTypedArray()[0], 0);
+    });
   });
 });

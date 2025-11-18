@@ -303,12 +303,33 @@ export function ones(
 
 export function full(
   shape: readonly number[],
-  value: number,
-  dtype: DType = 'float32',
+  value: number | SupportedTypedArray | MLXArray,
+  dtype?: DType,
 ): MLXArray {
-  return MLXArray.fromHandle(
-    addon.full(normalizeShapeInput(shape), value, dtype),
-  );
+  const normalizedShape = normalizeShapeInput(shape);
+
+  if (value instanceof MLXArray) {
+    if (dtype !== undefined) {
+      return MLXArray.fromHandle(
+        addon.full(normalizedShape, value.toNative(), dtype),
+      );
+    }
+    return MLXArray.fromHandle(addon.full(normalizedShape, value.toNative()));
+  }
+
+  if (isTypedArray(value)) {
+    if (dtype !== undefined) {
+      return MLXArray.fromHandle(addon.full(normalizedShape, value, dtype));
+    }
+    return MLXArray.fromHandle(addon.full(normalizedShape, value));
+  }
+
+  if (dtype !== undefined) {
+    return MLXArray.fromHandle(
+      addon.full(normalizedShape, value as number, dtype),
+    );
+  }
+  return MLXArray.fromHandle(addon.full(normalizedShape, value as number));
 }
 
 export function zeros_like(base: MLXArray): MLXArray {

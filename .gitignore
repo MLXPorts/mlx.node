@@ -3,6 +3,13 @@ node/build/
 node/generated/
 node/node_modules/
 node/dist/
+node/node/build/
+build/
+
+# Python artifacts
+python/mlx.egg-info/
+*.pyc
+__pycache__/
 
 # Common compiled artifacts
 *.o
@@ -16,6 +23,24 @@ node/dist/
 *.exe
 *.out
 *.node
+
+# AI-generated documentation
+AI_AGENT_GUIDE.md
+ISSUE_GENERATION_COMPLETE.md
+ISSUE_GENERATION_SUMMARY.md
+.github/ISSUE_TEMPLATE/implement-api.md
+docs/API_CHECKLIST.md
+docs/ISSUE_AUTOMATION.md
+docs/MISSING_INVENTORY.md
+docs/PORTING_STRATEGY_REVIEW.md
+
+# Script artifacts
+scripts/__pycache__/
+scripts/*.json
+scripts/create_issues_batch.sh
+scripts/generate_all_issues.py
+scripts/generate_api_issues.py
+scripts/README.md
 
 # Logs and OS cruft
 *.log

@@ -8,18 +8,19 @@ This module provides optimizer implementations for training neural networks with
 
 - **Base `Optimizer` class**: Abstract base class with state management, scheduler support, and parameter tree handling
 - **`SGD` optimizer class**: Stochastic Gradient Descent with momentum, weight decay, dampening, and Nesterov momentum support
+- **`Lion` optimizer class**: EvoLved Sign Momentum implementation with sign-based updates and optional weight decay
+- **Core operations**: `add`, `multiply`, `subtract`, `sign` bindings exposed for optimizer math
 - **API structure**: Matches Python MLX API for optimizer initialization and configuration
 - **Type safety**: Full TypeScript types and interfaces
 - **Validation**: Parameter validation (e.g., Nesterov requirements)
 - **State management**: Proper state initialization and tracking
-- **Tests**: Basic unit tests for constructor, validation, and state management
+- **Tests**: Unit tests for SGD and Lion constructors, validation, and state management
 
 ### ⚠️ Partially Implemented
 
-The `SGD.applySingle()` method has a placeholder implementation because it requires core array operations that are not yet available in the Node.js MLX bindings:
+The `SGD.applySingle()` method has a placeholder implementation because it requires additional array operations that are not yet available in the Node.js MLX bindings:
 
 **Missing Core Operations:**
-- `subtract(a, b)` - Array subtraction
 - Scalar-array arithmetic (e.g., `multiply(scalar, array)`)
 - `astype()` - Dtype conversion for arrays
 - Proper scalar array construction from numbers
@@ -98,6 +99,33 @@ Where:
 - Nesterov momentum requires `momentum > 0` and `dampening = 0`
 - Throws error if validation fails
 
+### `Lion` (EvoLved Sign Momentum)
+
+**Constructor Options:**
+```typescript
+interface LionOptions {
+  learningRate: number | Scheduler;
+  betas?: [number, number];
+  weightDecay?: number;
+}
+```
+
+**Update Formula:**
+```
+c_{t+1} = β₁ * m_t + (1 - β₁) * g_t
+m_{t+1} = β₂ * m_t + (1 - β₂) * g_t
+w_{t+1} = w_t - η * (sign(c_t) + λ * w_t)
+```
+
+Where:
+- `η` is the learning rate
+- `β₁`, `β₂` are the momentum coefficients
+- `λ` is the (optional) weight decay strength
+
+**Notes:**
+- Recommended learning rates are typically 3–10× smaller than AdamW
+- Weight decay should be scaled up proportionally to maintain `lr * weightDecay`
+
 ## Architecture
 
 The optimizer implementation follows the Python MLX design:
@@ -126,10 +154,13 @@ Current tests cover:
 
 To complete the SGD implementation:
 
-1. **Add missing core operations** to `node/src/core/ops.ts`:
+1. **Add remaining core operations** to `node/src/core/ops.ts`:
    ```typescript
-   export function subtract(a: MLXArray, b: MLXArray, options?: BinaryOpOptions): MLXArray
    export function divide(a: MLXArray, b: MLXArray, options?: BinaryOpOptions): MLXArray
+   export function sqrt(a: MLXArray, options?: UnaryOpOptions): MLXArray
+   export function square(a: MLXArray, options?: UnaryOpOptions): MLXArray
+   export function rsqrt(a: MLXArray, options?: UnaryOpOptions): MLXArray
+   export function power(a: MLXArray, b: MLXArray | number, options?: BinaryOpOptions): MLXArray
    ```
 
 2. **Add scalar-array arithmetic support**:

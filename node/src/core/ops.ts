@@ -216,6 +216,144 @@ export function sign(a: ScalarOrArray, options?: UnaryOpOptions): MLXArray {
   return MLXArray.fromHandle(handle);
 }
 
+export function abs(a: ScalarOrArray, options?: UnaryOpOptions): MLXArray {
+  const args: any[] = [toNativeScalarOrArray(a)];
+  appendStreamArg(args, options?.stream);
+  const handle = addon.abs(...args);
+  return MLXArray.fromHandle(handle);
+}
+
+export function sqrt(a: ScalarOrArray, options?: UnaryOpOptions): MLXArray {
+  const args: any[] = [toNativeScalarOrArray(a)];
+  appendStreamArg(args, options?.stream);
+  const handle = addon.sqrt(...args);
+  return MLXArray.fromHandle(handle);
+}
+
+export function exp(a: ScalarOrArray, options?: UnaryOpOptions): MLXArray {
+  const args: any[] = [toNativeScalarOrArray(a)];
+  appendStreamArg(args, options?.stream);
+  const handle = addon.exp(...args);
+  return MLXArray.fromHandle(handle);
+}
+
+export function log(a: ScalarOrArray, options?: UnaryOpOptions): MLXArray {
+  const args: any[] = [toNativeScalarOrArray(a)];
+  appendStreamArg(args, options?.stream);
+  const handle = addon.log(...args);
+  return MLXArray.fromHandle(handle);
+}
+
+export function divide(
+  a: ScalarOrArray,
+  b: ScalarOrArray,
+  options?: BinaryOpOptions,
+): MLXArray {
+  const args: any[] = [toNativeScalarOrArray(a), toNativeScalarOrArray(b)];
+  appendStreamArg(args, options?.stream);
+  const handle = addon.divide(...args);
+  return MLXArray.fromHandle(handle);
+}
+
+export function power(
+  a: ScalarOrArray,
+  b: ScalarOrArray,
+  options?: BinaryOpOptions,
+): MLXArray {
+  const args: any[] = [toNativeScalarOrArray(a), toNativeScalarOrArray(b)];
+  appendStreamArg(args, options?.stream);
+  const handle = addon.power(...args);
+  return MLXArray.fromHandle(handle);
+}
+
+export function equal(
+  a: ScalarOrArray,
+  b: ScalarOrArray,
+  options?: BinaryOpOptions,
+): MLXArray {
+  const args: any[] = [toNativeScalarOrArray(a), toNativeScalarOrArray(b)];
+  appendStreamArg(args, options?.stream);
+  const handle = addon.equal(...args);
+  return MLXArray.fromHandle(handle);
+}
+
+export function not_equal(
+  a: ScalarOrArray,
+  b: ScalarOrArray,
+  options?: BinaryOpOptions,
+): MLXArray {
+  const args: any[] = [toNativeScalarOrArray(a), toNativeScalarOrArray(b)];
+  appendStreamArg(args, options?.stream);
+  const handle = addon.not_equal(...args);
+  return MLXArray.fromHandle(handle);
+}
+
+export function less(
+  a: ScalarOrArray,
+  b: ScalarOrArray,
+  options?: BinaryOpOptions,
+): MLXArray {
+  const args: any[] = [toNativeScalarOrArray(a), toNativeScalarOrArray(b)];
+  appendStreamArg(args, options?.stream);
+  const handle = addon.less(...args);
+  return MLXArray.fromHandle(handle);
+}
+
+export function less_equal(
+  a: ScalarOrArray,
+  b: ScalarOrArray,
+  options?: BinaryOpOptions,
+): MLXArray {
+  const args: any[] = [toNativeScalarOrArray(a), toNativeScalarOrArray(b)];
+  appendStreamArg(args, options?.stream);
+  const handle = addon.less_equal(...args);
+  return MLXArray.fromHandle(handle);
+}
+
+export function greater(
+  a: ScalarOrArray,
+  b: ScalarOrArray,
+  options?: BinaryOpOptions,
+): MLXArray {
+  const args: any[] = [toNativeScalarOrArray(a), toNativeScalarOrArray(b)];
+  appendStreamArg(args, options?.stream);
+  const handle = addon.greater(...args);
+  return MLXArray.fromHandle(handle);
+}
+
+export function greater_equal(
+  a: ScalarOrArray,
+  b: ScalarOrArray,
+  options?: BinaryOpOptions,
+): MLXArray {
+  const args: any[] = [toNativeScalarOrArray(a), toNativeScalarOrArray(b)];
+  appendStreamArg(args, options?.stream);
+  const handle = addon.greater_equal(...args);
+  return MLXArray.fromHandle(handle);
+}
+
+export function maximum(
+  a: ScalarOrArray,
+  b: ScalarOrArray,
+  options?: BinaryOpOptions,
+): MLXArray {
+  const args: any[] = [toNativeScalarOrArray(a), toNativeScalarOrArray(b)];
+  appendStreamArg(args, options?.stream);
+  const handle = addon.maximum(...args);
+  return MLXArray.fromHandle(handle);
+}
+
+export function minimum(
+  a: ScalarOrArray,
+  b: ScalarOrArray,
+  options?: BinaryOpOptions,
+): MLXArray {
+  const args: any[] = [toNativeScalarOrArray(a), toNativeScalarOrArray(b)];
+  appendStreamArg(args, options?.stream);
+  const handle = addon.minimum(...args);
+  return MLXArray.fromHandle(handle);
+}
+
 export interface ArangeOptions extends StreamOptions {
   dtype?: any;
 }

@@ -6,6 +6,7 @@
  */
 
 import MLXArray, { zeros, zeros_like } from '../core/array';
+import { add, multiply, subtract, sign } from '../core/ops';
 import { treeMap } from '../utils';
 
 /**
@@ -338,18 +339,18 @@ export interface AdamOptions {
 
 /**
  * The Adam optimizer.
- * 
+ *
  * Implements the Adam algorithm from "Adam: A Method for Stochastic Optimization" (Kingma & Ba, 2015).
- * 
+ *
  * The algorithm updates parameters as follows:
- * 
+ *
  *   m_{t+1} = β₁ * m_t + (1 - β₁) * g_t
  *   v_{t+1} = β₂ * v_t + (1 - β₂) * g_t²
  *   w_{t+1} = w_t - λ * m_{t+1} / (√v_{t+1} + ε)
- * 
+ *
  * where λ is the learning rate, m_t and v_t are the first and second moment estimates,
  * g_t is the gradient, and ε is a small constant for numerical stability.
- * 
+ *
  * @example
  * ```typescript
  * const optimizer = new Adam({ learningRate: 0.001 });
@@ -365,11 +366,11 @@ export class Adam extends Optimizer {
   constructor(options: AdamOptions) {
     super();
 
-    const { 
-      learningRate, 
-      betas = [0.9, 0.999], 
-      eps = 1e-8, 
-      biasCorrection = false 
+    const {
+      learningRate,
+      betas = [0.9, 0.999],
+      eps = 1e-8,
+      biasCorrection = false
     } = options;
 
     this._maybeSchedule('learning_rate', learningRate);
@@ -393,7 +394,7 @@ export class Adam extends Optimizer {
     // The full implementation requires additional operations that are not yet
     // available in the Node.js bindings:
     // - Subtraction operator
-    // - Division operator  
+    // - Division operator
     // - square() for computing g²
     // - sqrt() for computing √v
     // - rsqrt() for bias correction
@@ -401,7 +402,7 @@ export class Adam extends Optimizer {
     // - astype() for dtype conversion
     //
     // This code will need to be updated once those operations are available.
-    
+
     throw new Error(
       'Adam.applySingle is not yet fully implemented. ' +
       'This requires additional core operations (subtract, divide, square, sqrt, rsqrt, power) ' +
@@ -422,10 +423,10 @@ export class Adam extends Optimizer {
 
     // Update biased first moment estimate: m = β₁ * m + (1 - β₁) * g
     m = add(multiply(b1, m), multiply(1 - b1, gradient));
-    
+
     // Update biased second moment estimate: v = β₂ * v + (1 - β₂) * g²
     v = add(multiply(b2, v), multiply(1 - b2, square(gradient)));
-    
+
     // Store updated moments
     state.m = m;
     state.v = v;
@@ -433,15 +434,15 @@ export class Adam extends Optimizer {
     if (biasCorrection) {
       // Compute bias-corrected learning rate: lr / (1 - β₁^step)
       const c1 = divide(lr, subtract(1, power(b1, step))); // .astype(gradient.dtype)
-      
+
       // Compute bias correction for second moment: 1 / √(1 - β₂^step)
       const c2 = rsqrt(subtract(1, power(b2, step))); // .astype(gradient.dtype)
-      
+
       // Compute update: c1 * m / (√v * c2 + ε)
       const numerator = multiply(c1, m);
       const denominator = add(multiply(sqrt(v), c2), eps);
       const update = divide(numerator, denominator);
-      
+
       return subtract(parameter, update);
     } else {
       // Compute update without bias correction: lr * m / (√v + ε)
@@ -452,8 +453,55 @@ export class Adam extends Optimizer {
   }
 }
 
+export interface LionOptions {
+  learningRate: SchedulableParam;
+  betas?: [number, number];
+  weightDecay?: number;
+}
+
+export class Lion extends Optimizer {
+  betas: [number, number];
+  weightDecay: number;
+
+  constructor(options: LionOptions) {
+    super();
+    const { learningRate, betas = [0.9, 0.99], weightDecay = 0 } = options;
+    this._maybeSchedule('learning_rate', learningRate);
+    this.betas = betas;
+    this.weightDecay = weightDecay;
+  }
+
+  protected initSingle(parameter: MLXArray, state: Record<string, any>): void {
+    state.m = zeros_like(parameter);
+  }
+
+  protected applySingle(
+    gradient: MLXArray,
+    parameter: MLXArray,
+    state: Record<string, any>,
+  ): MLXArray {
+    const lr = this.learningRate;
+    const [beta1, beta2] = this.betas;
+    const momentum = state.m;
+
+    const c = add(multiply(beta1, momentum), multiply(1 - beta1, gradient));
+    state.m = add(multiply(beta2, momentum), multiply(1 - beta2, gradient));
+
+    let updatedParameter = parameter;
+    if (this.weightDecay > 0) {
+      updatedParameter = multiply(
+        subtract(1, multiply(lr, this.weightDecay)),
+        parameter,
+      );
+    }
+
+    return subtract(updatedParameter, multiply(lr, sign(c)));
+  }
+}
+
 export default {
   Optimizer,
   SGD,
   Adam,
+  Lion,
 };
