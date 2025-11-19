@@ -2124,6 +2124,149 @@ Napi::Value Tan(const Napi::CallbackInfo& info) {
   return WrapArray(env, tensor);
 }
 
+Napi::Value Sin(const Napi::CallbackInfo& info) {
+  auto env = info.Env();
+  if (info.Length() < 1) {
+    Napi::TypeError::New(env, "sin expects at least one argument")
+        .ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
+  auto a = ToArray(env, info[0]);
+  if (env.IsExceptionPending()) {
+    return env.Null();
+  }
+
+  auto streamArg = GetStreamArgument(info, 1);
+  if (env.IsExceptionPending()) {
+    return env.Null();
+  }
+
+  auto tensor =
+      std::make_shared<mlx::core::array>(mlx::core::sin(a, streamArg));
+  return WrapArray(env, tensor);
+}
+
+Napi::Value Cos(const Napi::CallbackInfo& info) {
+  auto env = info.Env();
+  if (info.Length() < 1) {
+    Napi::TypeError::New(env, "cos expects at least one argument")
+        .ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
+  auto a = ToArray(env, info[0]);
+  if (env.IsExceptionPending()) {
+    return env.Null();
+  }
+
+  auto streamArg = GetStreamArgument(info, 1);
+  if (env.IsExceptionPending()) {
+    return env.Null();
+  }
+
+  auto tensor =
+      std::make_shared<mlx::core::array>(mlx::core::cos(a, streamArg));
+  return WrapArray(env, tensor);
+}
+
+Napi::Value Arcsin(const Napi::CallbackInfo& info) {
+  auto env = info.Env();
+  if (info.Length() < 1) {
+    Napi::TypeError::New(env, "arcsin expects at least one argument")
+        .ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
+  auto a = ToArray(env, info[0]);
+  if (env.IsExceptionPending()) {
+    return env.Null();
+  }
+
+  auto streamArg = GetStreamArgument(info, 1);
+  if (env.IsExceptionPending()) {
+    return env.Null();
+  }
+
+  auto tensor =
+      std::make_shared<mlx::core::array>(mlx::core::arcsin(a, streamArg));
+  return WrapArray(env, tensor);
+}
+
+Napi::Value Arccos(const Napi::CallbackInfo& info) {
+  auto env = info.Env();
+  if (info.Length() < 1) {
+    Napi::TypeError::New(env, "arccos expects at least one argument")
+        .ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
+  auto a = ToArray(env, info[0]);
+  if (env.IsExceptionPending()) {
+    return env.Null();
+  }
+
+  auto streamArg = GetStreamArgument(info, 1);
+  if (env.IsExceptionPending()) {
+    return env.Null();
+  }
+
+  auto tensor =
+      std::make_shared<mlx::core::array>(mlx::core::arccos(a, streamArg));
+  return WrapArray(env, tensor);
+}
+
+Napi::Value Arctan(const Napi::CallbackInfo& info) {
+  auto env = info.Env();
+  if (info.Length() < 1) {
+    Napi::TypeError::New(env, "arctan expects at least one argument")
+        .ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
+  auto a = ToArray(env, info[0]);
+  if (env.IsExceptionPending()) {
+    return env.Null();
+  }
+
+  auto streamArg = GetStreamArgument(info, 1);
+  if (env.IsExceptionPending()) {
+    return env.Null();
+  }
+
+  auto tensor =
+      std::make_shared<mlx::core::array>(mlx::core::arctan(a, streamArg));
+  return WrapArray(env, tensor);
+}
+
+Napi::Value Arctan2(const Napi::CallbackInfo& info) {
+  auto env = info.Env();
+  if (info.Length() < 2) {
+    Napi::TypeError::New(env, "arctan2 expects two arguments")
+        .ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
+  auto a = ToArray(env, info[0]);
+  if (env.IsExceptionPending()) {
+    return env.Null();
+  }
+
+  auto b = ToArray(env, info[1]);
+  if (env.IsExceptionPending()) {
+    return env.Null();
+  }
+
+  auto streamArg = GetStreamArgument(info, 2);
+  if (env.IsExceptionPending()) {
+    return env.Null();
+  }
+
+  auto tensor =
+      std::make_shared<mlx::core::array>(mlx::core::arctan2(a, b, streamArg));
+  return WrapArray(env, tensor);
+}
+
 Napi::Value Rsqrt(const Napi::CallbackInfo& info) {
   auto env = info.Env();
   if (info.Length() < 1) {

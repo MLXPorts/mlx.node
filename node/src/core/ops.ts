@@ -195,6 +195,52 @@ export function tan(a: ScalarOrArray, options?: UnaryOpOptions): MLXArray {
   return MLXArray.fromHandle(handle);
 }
 
+export function sin(a: ScalarOrArray, options?: UnaryOpOptions): MLXArray {
+  const args: any[] = [toNativeScalarOrArray(a)];
+  appendStreamArg(args, options?.stream);
+  const handle = addon.sin(...args);
+  return MLXArray.fromHandle(handle);
+}
+
+export function cos(a: ScalarOrArray, options?: UnaryOpOptions): MLXArray {
+  const args: any[] = [toNativeScalarOrArray(a)];
+  appendStreamArg(args, options?.stream);
+  const handle = addon.cos(...args);
+  return MLXArray.fromHandle(handle);
+}
+
+export function arcsin(a: ScalarOrArray, options?: UnaryOpOptions): MLXArray {
+  const args: any[] = [toNativeScalarOrArray(a)];
+  appendStreamArg(args, options?.stream);
+  const handle = addon.arcsin(...args);
+  return MLXArray.fromHandle(handle);
+}
+
+export function arccos(a: ScalarOrArray, options?: UnaryOpOptions): MLXArray {
+  const args: any[] = [toNativeScalarOrArray(a)];
+  appendStreamArg(args, options?.stream);
+  const handle = addon.arccos(...args);
+  return MLXArray.fromHandle(handle);
+}
+
+export function arctan(a: ScalarOrArray, options?: UnaryOpOptions): MLXArray {
+  const args: any[] = [toNativeScalarOrArray(a)];
+  appendStreamArg(args, options?.stream);
+  const handle = addon.arctan(...args);
+  return MLXArray.fromHandle(handle);
+}
+
+export function arctan2(
+  a: ScalarOrArray,
+  b: ScalarOrArray,
+  options?: BinaryOpOptions,
+): MLXArray {
+  const args: any[] = [toNativeScalarOrArray(a), toNativeScalarOrArray(b)];
+  appendStreamArg(args, options?.stream);
+  const handle = addon.arctan2(...args);
+  return MLXArray.fromHandle(handle);
+}
+
 export function rsqrt(a: ScalarOrArray, options?: UnaryOpOptions): MLXArray {
   const args: any[] = [toNativeScalarOrArray(a)];
   appendStreamArg(args, options?.stream);
