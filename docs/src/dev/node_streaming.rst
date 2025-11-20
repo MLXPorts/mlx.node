@@ -1,3 +1,5 @@
+.. _node_streaming:
+
 Node/React Streaming Architecture
 =================================
 

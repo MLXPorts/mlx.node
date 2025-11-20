@@ -1,10 +1,10 @@
 import { strict as assert } from 'assert';
-import mlx, { array as createArray, Array as MLXArray } from '../../src';
+import { core, array as createArray, Array as MLXArray } from '../../src';
 
-describe('mlx.core.array', () => {
+describe('core.array', () => {
   it('creates float32 array from typed array', () => {
     const data = new Float32Array([1, 2, 3, 4, 5, 6]);
-    const arr = mlx.core.array(data, [2, 3], 'float32');
+    const arr = core.array(data, [2, 3], 'float32');
 
     assert.ok(arr instanceof MLXArray);
     assert.deepEqual(arr.shape, [2, 3]);
@@ -16,12 +16,12 @@ describe('mlx.core.array', () => {
   it('throws when shape does not match data length', () => {
     const data = new Float32Array([1, 2, 3, 4]);
     assert.throws(() => {
-      mlx.core.array(data, [3, 3], 'float32');
+      core.array(data, [3, 3], 'float32');
     });
   });
 
   it('supports boolean arrays', () => {
-    const arr = mlx.core.array([1, 0, 1, 1], [2, 2], 'bool');
+    const arr = core.array([1, 0, 1, 1], [2, 2], 'bool');
     assert.equal(arr.dtype, 'bool');
     assert.deepEqual(arr.shape, [2, 2]);
     assert.deepEqual(arr.toArray(), [true, false, true, true]);
@@ -31,7 +31,7 @@ describe('mlx.core.array', () => {
 
   it('supports int32 arrays from typed array', () => {
     const data = new Int32Array([1, -2, 3, -4]);
-    const arr = mlx.core.array(data, [2, 2], 'int32');
+    const arr = core.array(data, [2, 2], 'int32');
     assert.equal(arr.dtype, 'int32');
     assert.deepEqual(arr.toArray(), [1, -2, 3, -4]);
     const typed = arr.toTypedArray();
@@ -40,7 +40,7 @@ describe('mlx.core.array', () => {
 
   it('supports complex64 arrays', () => {
     const data = new Float32Array([1, 2, 3, 4]);
-    const arr = mlx.core.array(data, [2], 'complex64');
+    const arr = core.array(data, [2], 'complex64');
     assert.equal(arr.dtype, 'complex64');
     assert.deepEqual(arr.shape, [2]);
     assert.deepEqual(arr.toArray(), [
@@ -62,43 +62,43 @@ describe('mlx.core.array', () => {
   });
 
   it('creates scalar-filled arrays', () => {
-    const zeros = mlx.core.zeros([2, 3], 'float32');
+    const zeros = core.zeros([2, 3], 'float32');
     assert.deepEqual(zeros.shape, [2, 3]);
     assert.equal(zeros.dtype, 'float32');
     assert.ok(zeros.toArray().every((value) => value === 0));
 
-    const ones = mlx.core.ones([2, 2]);
+    const ones = core.ones([2, 2]);
     assert.deepEqual(ones.shape, [2, 2]);
     assert.equal(ones.dtype, 'float32');
     assert.ok(ones.toArray().every((value) => value === 1));
 
-    const full = mlx.core.full([3], 7.5, 'float64');
+    const full = core.full([3], 7.5, 'float64');
     assert.deepEqual(full.shape, [3]);
     assert.equal(full.dtype, 'float64');
     assert.ok(full.toArray().every((value) => value === 7.5));
   });
 
-  it('supports *_like helpers', () => {
-    const base = mlx.core.zeros([4], 'float32');
-    const zerosLike = mlx.core.zeros_like(base);
-    assert.deepEqual(zerosLike.shape, [4]);
-    assert.equal(zerosLike.dtype, 'float32');
-    assert.ok(zerosLike.toArray().every((value) => value === 0));
+  it('supports *Like helpers', () => {
+    const base = core.zeros([4], 'float32');
+    const zerosLikeResult = core.zerosLike(base);
+    assert.deepEqual(zerosLikeResult.shape, [4]);
+    assert.equal(zerosLikeResult.dtype, 'float32');
+    assert.ok(zerosLikeResult.toArray().every((value) => value === 0));
 
-    const onesLike = mlx.core.ones_like(base);
-    assert.equal(onesLike.dtype, 'float32');
-    assert.ok(onesLike.toArray().every((value) => value === 1));
+    const onesLikeResult = core.onesLike(base);
+    assert.equal(onesLikeResult.dtype, 'float32');
+    assert.ok(onesLikeResult.toArray().every((value) => value === 1));
   });
 
-  describe('mlx.core.full', () => {
+  describe('core.full', () => {
     it('creates array with scalar value and 1D shape', () => {
-      const x = mlx.core.full([2], 3.0);
+      const x = core.full([2], 3.0);
       assert.deepEqual(x.shape, [2]);
       assert.deepEqual(x.toArray(), [3, 3]);
     });
 
     it('creates array with scalar value and 2D shape', () => {
-      const x = mlx.core.full([2, 3], 2.0);
+      const x = core.full([2, 3], 2.0);
       assert.equal(x.dtype, 'float32');
       assert.deepEqual(x.shape, [2, 3]);
       assert.deepEqual(x.toArray(), [
@@ -108,21 +108,21 @@ describe('mlx.core.array', () => {
     });
 
     it('respects explicit dtype', () => {
-      const x = mlx.core.full([3], 7.5, 'float64');
+      const x = core.full([3], 7.5, 'float64');
       assert.deepEqual(x.shape, [3]);
       assert.equal(x.dtype, 'float64');
       assert.deepEqual(x.toArray(), [7.5, 7.5, 7.5]);
     });
 
     it('infers dtype for integer scalars', () => {
-      const x = mlx.core.full([3], 42);
+      const x = core.full([3], 42);
       assert.equal(x.dtype, 'int32');
       assert.deepEqual(x.toArray(), [42, 42, 42]);
     });
 
     it('broadcasts MLXArray values', () => {
-      const value = mlx.core.array([1, 2], [2], 'int32');
-      const x = mlx.core.full([3, 2], value);
+      const value = core.array([1, 2], [2], 'int32');
+      const x = core.full([3, 2], value);
       assert.deepEqual(x.shape, [3, 2]);
       assert.deepEqual(x.toArray(), [
         [1, 2],
@@ -133,7 +133,7 @@ describe('mlx.core.array', () => {
 
     it('broadcasts TypedArray values', () => {
       const value = new Float32Array([2, 3]);
-      const x = mlx.core.full([2, 2], value);
+      const x = core.full([2, 2], value);
       assert.deepEqual(x.shape, [2, 2]);
       assert.deepEqual(x.toArray(), [
         [2, 3],

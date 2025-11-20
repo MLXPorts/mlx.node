@@ -116,11 +116,11 @@ void compiled_allocate_outputs(
     const std::function<bool(size_t)>& is_constant,
     bool contiguous) {
   if (contiguous) {
-    int o = 0;
+    size_t o = 0;
     Strides strides;
     size_t data_size;
     array::Flags flags;
-    for (int i = 0; i < inputs.size() && o < outputs.size(); ++i) {
+    for (size_t i = 0; i < inputs.size() && o < outputs.size(); ++i) {
       auto& in = inputs[i];
       // Conditions for donation
       // - Correct size
@@ -146,8 +146,8 @@ void compiled_allocate_outputs(
           flags);
     }
   } else {
-    int o = 0;
-    for (int i = 0; i < inputs.size() && o < outputs.size(); ++i) {
+    size_t o = 0;
+    for (size_t i = 0; i < inputs.size() && o < outputs.size(); ++i) {
       auto& in = inputs[i];
       // Conditions for donation
       // - Row contiguous

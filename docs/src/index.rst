@@ -5,7 +5,9 @@ MLX is a NumPy-like array framework designed for efficient and flexible machine
 learning on Apple silicon, brought to you by Apple machine learning research.
 
 The Python API closely follows NumPy with a few exceptions. MLX also has a
-fully featured C++ API which closely follows the Python API.
+fully featured C++ API which closely follows the Python API. Additionally, MLX
+provides Node.js bindings with TypeScript support for building ML applications
+in JavaScript/TypeScript environments.
 
 The main differences between MLX and NumPy are:
 
@@ -84,6 +86,18 @@ are the CPU and GPU.
    cpp/ops
 
 .. toctree::
+   :caption: Node.js API Reference
+   :maxdepth: 1
+
+   nodejs/quickstart
+   nodejs/array
+   nodejs/data_types
+   nodejs/ops
+   nodejs/devices_and_streams
+   nodejs/optimizers
+   nodejs/examples
+
+.. toctree::
    :caption: Further Reading
    :maxdepth: 1
 
@@ -92,3 +106,4 @@ are the CPU and GPU.
    dev/custom_metal_kernels
    dev/mlx_in_cpp
    dev/node_streaming
+   dev/node_architecture

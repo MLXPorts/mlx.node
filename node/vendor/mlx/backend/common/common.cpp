@@ -21,8 +21,8 @@ void AsStrided::eval(const std::vector<array>& inputs, array& out) {
 
   // Compute the flags given the shape and strides
   bool row_contiguous = true, col_contiguous = true;
-  size_t r = 1, c = 1;
-  for (int i = strides_.size() - 1, j = 0; i >= 0; i--, j++) {
+  int64_t r = 1, c = 1;
+  for (int i = static_cast<int>(strides_.size()) - 1, j = 0; i >= 0; i--, j++) {
     row_contiguous &= (r == strides_[i]) || (shape_[i] == 1);
     col_contiguous &= (c == strides_[j]) || (shape_[j] == 1);
     r *= shape_[i];
@@ -60,7 +60,7 @@ void CustomTransforms::eval(
     const std::vector<array>& inputs,
     std::vector<array>& outputs) {
   assert(inputs.size() > outputs.size());
-  for (int i = 0, j = inputs.size() - outputs.size(); i < outputs.size();
+  for (size_t i = 0, j = inputs.size() - outputs.size(); i < outputs.size();
        i++, j++) {
     outputs[i].copy_shared_buffer(inputs[j]);
   }
@@ -70,7 +70,7 @@ void Depends::eval(
     const std::vector<array>& inputs,
     std::vector<array>& outputs) {
   assert(inputs.size() > outputs.size());
-  for (int i = 0; i < outputs.size(); i++) {
+  for (size_t i = 0; i < outputs.size(); i++) {
     outputs[i].copy_shared_buffer(inputs[i]);
   }
 }
@@ -162,8 +162,8 @@ std::pair<bool, Strides> prepare_reshape(const array& in, const array& out) {
   // let's check.
   Strides out_strides;
   bool copy_necessary = false;
-  int j = 0;
-  for (int i = 0; i < out.ndim(); i++) {
+  size_t j = 0;
+  for (size_t i = 0; i < out.ndim(); i++) {
     int N = out.shape(i);
     if (j < shape.size() && shape[j] % N == 0) {
       shape[j] /= N;
@@ -192,7 +192,7 @@ void shared_buffer_reshape(
     // - If reshaping into a vector (all singleton dimensions except one) it
     //    becomes col contiguous again.
     auto max_dim = std::max_element(out.shape().begin(), out.shape().end());
-    flags.col_contiguous = out.size() <= 1 || out.size() == *max_dim;
+    flags.col_contiguous = out.size() <= 1 || out.size() == static_cast<size_t>(*max_dim);
   }
   out.copy_shared_buffer(in, out_strides, flags, in.data_size());
 }
@@ -209,11 +209,11 @@ void Split::eval(
                               size_t in_data_size,
                               auto flags) {
     size_t data_size = 1;
-    size_t f_stride = 1;
-    size_t b_stride = 1;
+    int64_t f_stride = 1;
+    int64_t b_stride = 1;
     flags.row_contiguous = true;
     flags.col_contiguous = true;
-    for (int i = 0, ri = shape.size() - 1; ri >= 0; i++, ri--) {
+    for (size_t i = 0, ri = shape.size() - 1; ri < shape.size(); i++, ri--) {
       flags.col_contiguous &= strides[i] == f_stride || shape[i] == 1;
       flags.row_contiguous &= strides[ri] == b_stride || shape[ri] == 1;
       f_stride *= shape[i];
@@ -240,7 +240,7 @@ void Split::eval(
 
   std::vector<int> indices(1, 0);
   indices.insert(indices.end(), indices_.begin(), indices_.end());
-  for (int i = 0; i < indices.size(); i++) {
+  for (size_t i = 0; i < indices.size(); i++) {
     size_t offset = indices[i] * in.strides()[axis_];
     auto [new_flags, data_size] = compute_new_flags(
         outputs[i].shape(), in.strides(), in.data_size(), in.flags());
@@ -253,8 +253,8 @@ void Squeeze::eval(const std::vector<array>& inputs, array& out) {
   assert(inputs.size() == 1);
   const auto& in = inputs[0];
   Strides strides;
-  for (int i = 0, j = 0; i < in.ndim(); ++i) {
-    if (j < axes_.size() && i == axes_[j]) {
+  for (size_t i = 0, j = 0; i < in.ndim(); ++i) {
+    if (j < axes_.size() && i == static_cast<size_t>(axes_[j])) {
       j++;
     } else {
       strides.push_back(in.strides(i));
@@ -272,7 +272,7 @@ void Transpose::eval(const std::vector<array>& inputs, array& out) {
   assert(inputs.size() == 1);
   Strides out_strides(out.ndim());
   auto& in = inputs[0];
-  for (int ax = 0; ax < axes_.size(); ++ax) {
+  for (size_t ax = 0; ax < axes_.size(); ++ax) {
     out_strides[ax] = in.strides()[axes_[ax]];
   }
 
@@ -291,7 +291,7 @@ void Transpose::eval(const std::vector<array>& inputs, array& out) {
     int64_t b_stride = 1;
     flags.col_contiguous = true;
     flags.row_contiguous = true;
-    for (int i = 0, ri = out.ndim() - 1; i < out.ndim(); ++i, --ri) {
+    for (size_t i = 0, ri = out.ndim() - 1; i < out.ndim(); ++i, --ri) {
       flags.col_contiguous &= (out_strides[i] == f_stride || out.shape(i) == 1);
       f_stride *= out.shape(i);
       flags.row_contiguous &=

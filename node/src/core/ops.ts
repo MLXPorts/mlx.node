@@ -323,7 +323,7 @@ export function equal(
   return MLXArray.fromHandle(handle);
 }
 
-export function not_equal(
+export function notEqual(
   a: ScalarOrArray,
   b: ScalarOrArray,
   options?: BinaryOpOptions,
@@ -345,7 +345,7 @@ export function less(
   return MLXArray.fromHandle(handle);
 }
 
-export function less_equal(
+export function lessEqual(
   a: ScalarOrArray,
   b: ScalarOrArray,
   options?: BinaryOpOptions,
@@ -367,7 +367,7 @@ export function greater(
   return MLXArray.fromHandle(handle);
 }
 
-export function greater_equal(
+export function greaterEqual(
   a: ScalarOrArray,
   b: ScalarOrArray,
   options?: BinaryOpOptions,

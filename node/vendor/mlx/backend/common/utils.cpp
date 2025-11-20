@@ -28,8 +28,8 @@ std::tuple<Shape, std::vector<Strides>> collapse_contiguous_dims(
     if (shape[0] != 1) {
       to_collapse.push_back(0);
     }
-    size_t size = shape[0];
-    for (int i = 1; i < shape.size(); i++) {
+    int64_t size = shape[0];
+    for (size_t i = 1; i < shape.size(); i++) {
       bool contiguous = true;
       size *= shape[i];
       for (const auto& st : strides) {
@@ -51,7 +51,7 @@ std::tuple<Shape, std::vector<Strides>> collapse_contiguous_dims(
 
   Shape out_shape;
   std::vector<Strides> out_strides(strides.size());
-  for (int i = 0;;) {
+  for (size_t i = 0;;) {
     while (i < to_collapse.size() && to_collapse[i] == -1) {
       ++i;
     };
@@ -59,12 +59,12 @@ std::tuple<Shape, std::vector<Strides>> collapse_contiguous_dims(
       break;
     }
     int current_shape = shape[to_collapse[i]];
-    int k = i;
+    size_t k = i;
     while (to_collapse[++k] != -1) {
       current_shape *= shape[to_collapse[k]];
     }
     out_shape.push_back(current_shape);
-    for (int j = 0; j < strides.size(); j++) {
+    for (size_t j = 0; j < strides.size(); j++) {
       const auto& st = strides[j];
       out_strides[j].push_back(st[to_collapse[k - 1]]);
     }
@@ -90,7 +90,7 @@ std::pair<Shape, Strides> collapse_contiguous_dims(
   if (shape.size() > 0) {
     collapsed_shape.push_back(shape[0]);
     collapsed_strides.push_back(strides[0]);
-    for (int i = 1; i < shape.size(); i++) {
+    for (size_t i = 1; i < shape.size(); i++) {
       if (shape[i] == 1) {
         continue;
       } else if (
@@ -150,7 +150,7 @@ Dims get_2d_grid_dims_common(const Shape& shape, const Strides& strides) {
   // correspond to broadcasted dimensions
   size_t grid_x = 1;
   size_t grid_y = 1;
-  for (int i = 0; i < shape.size(); ++i) {
+  for (size_t i = 0; i < shape.size(); ++i) {
     if (strides[i] == 0) {
       continue;
     }
@@ -178,7 +178,7 @@ Dims get_2d_grid_dims_common(
   // divided by divisor.
   size_t grid_x = 1;
   size_t grid_y = 1;
-  for (int i = 0; i < shape.size(); ++i) {
+  for (size_t i = 0; i < shape.size(); ++i) {
     if (strides[i] == 0) {
       continue;
     }

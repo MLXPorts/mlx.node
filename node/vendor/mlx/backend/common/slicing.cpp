@@ -10,7 +10,7 @@ std::tuple<int64_t, Strides> prepare_slice(
     const Shape& strides) {
   int64_t data_offset = 0;
   Strides inp_strides(in.ndim(), 0);
-  for (int i = 0; i < in.ndim(); ++i) {
+  for (size_t i = 0; i < in.ndim(); ++i) {
     data_offset += start_indices[i] * in.strides()[i];
     inp_strides[i] = in.strides()[i] * strides[i];
   }
@@ -52,7 +52,7 @@ void slice(
   // Calculate out strides, initial offset
   auto [data_offset, inp_strides] = prepare_slice(in, start_indices, strides);
   int64_t data_end = 1;
-  for (int i = 0; i < start_indices.size(); ++i) {
+  for (size_t i = 0; i < start_indices.size(); ++i) {
     if (in.shape()[i] > 1) {
       auto end_idx = start_indices[i] + out.shape()[i] * strides[i] - 1;
       data_end += end_idx * in.strides()[i];

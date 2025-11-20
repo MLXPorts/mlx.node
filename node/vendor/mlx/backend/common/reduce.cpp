@@ -38,7 +38,7 @@ ReductionPlan get_reduction_plan(const array& x, const std::vector<int>& axes) {
     // Merge consecutive axes
     Shape shape = {x.shape(axes[0])};
     Strides strides = {x.strides()[axes[0]]};
-    for (int i = 1; i < axes.size(); i++) {
+    for (size_t i = 1; i < axes.size(); i++) {
       if (axes[i] - 1 == axes[i - 1] && x.shape(axes[i]) > 1) {
         shape.back() *= x.shape(axes[i]);
         strides.back() = x.strides()[axes[i]];

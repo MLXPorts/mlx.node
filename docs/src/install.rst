@@ -13,6 +13,46 @@ silicon computer is
 
     pip install mlx
 
+Node.js Installation
+--------------------
+
+MLX is available for Node.js via npm. To use MLX with Node.js on your Apple
+silicon computer:
+
+.. code-block:: shell
+
+    npm install mlx.node
+
+To install from npm your system must meet the following requirements:
+
+- Using an M series chip (Apple silicon)
+- Using Node.js >= 18.0
+- macOS >= 13.5
+
+.. note::
+    The Node.js bindings for MLX are only available on devices running macOS >= 13.5
+    with Apple Silicon. It is highly recommended to use macOS 14 (Sonoma)
+
+Build from Source (Node.js)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+To build the Node.js bindings from source:
+
+.. code-block:: shell
+
+   git clone https://github.com/MLXPorts/mlx.node.git
+   cd mlx.node/node
+   npm install
+   npm run build
+
+This will build the native addon using node-gyp and compile the TypeScript sources.
+
+Run tests with:
+
+.. code-block:: shell
+
+   npm test
+
 To install from PyPI your system must meet the following requirements:
 
 - Using an M series chip (Apple silicon)

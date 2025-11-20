@@ -5,7 +5,7 @@
  * Based on mlx.optimizers from the Python MLX library.
  */
 
-import MLXArray, { zeros, zeros_like } from '../core/array';
+import MLXArray, { zeros, zerosLike } from '../core/array';
 import { add, multiply, subtract, sign } from '../core/ops';
 import { treeMap } from '../utils';
 
@@ -255,8 +255,8 @@ export class SGD extends Optimizer {
   }
 
   protected initSingle(parameter: MLXArray, state: Record<string, any>): void {
-    // Initialize velocity with zeros_like
-    state.v = zeros_like(parameter);
+    // Initialize velocity with zerosLike
+    state.v = zerosLike(parameter);
   }
 
   protected applySingle(
@@ -295,7 +295,7 @@ export class SGD extends Optimizer {
     }
 
     // Get velocity from state
-    let v = state.v || zeros_like(parameter);
+    let v = state.v || zerosLike(parameter);
     
     // Update velocity
     v = multiply(array(this.momentum), v);
@@ -380,9 +380,9 @@ export class Adam extends Optimizer {
   }
 
   protected initSingle(parameter: MLXArray, state: Record<string, any>): void {
-    // Initialize first moment (m) and second moment (v) with zeros_like
-    state.m = zeros_like(parameter);
-    state.v = zeros_like(parameter);
+    // Initialize first moment (m) and second moment (v) with zerosLike
+    state.m = zerosLike(parameter);
+    state.v = zerosLike(parameter);
   }
 
   protected applySingle(
@@ -472,7 +472,7 @@ export class Lion extends Optimizer {
   }
 
   protected initSingle(parameter: MLXArray, state: Record<string, any>): void {
-    state.m = zeros_like(parameter);
+    state.m = zerosLike(parameter);
   }
 
   protected applySingle(

@@ -146,7 +146,7 @@ void array::set_data(allocator::Buffer buffer, Deleter d) {
   array_desc_->flags.contiguous = true;
   array_desc_->flags.row_contiguous = true;
   auto max_dim = std::max_element(shape().begin(), shape().end());
-  array_desc_->flags.col_contiguous = size() <= 1 || size() == *max_dim;
+  array_desc_->flags.col_contiguous = size() <= 1 || size() == static_cast<size_t>(*max_dim);
 }
 
 void array::set_data(
@@ -197,9 +197,9 @@ array::~array() {
     // If all siblings have siblings.size() references except
     // the one we are currently destroying (which has siblings.size() + 1)
     // then there are no more external references
-    do_detach &= (array_desc_.use_count() == (n + 1));
+    do_detach &= (static_cast<size_t>(array_desc_.use_count()) == (n + 1));
     for (auto& s : siblings()) {
-      do_detach &= (s.array_desc_.use_count() == n);
+      do_detach &= (static_cast<size_t>(s.array_desc_.use_count()) == n);
       if (!do_detach) {
         break;
       }
@@ -241,8 +241,8 @@ array::ArrayDesc::ArrayDesc(
     std::vector<array> inputs)
     : shape(std::move(shape)),
       dtype(dtype),
-      status(Status::unscheduled),
       primitive(std::move(primitive)),
+      status(Status::unscheduled),
       inputs(std::move(inputs)) {
   init();
 }
@@ -274,7 +274,7 @@ array::ArrayDesc::~ArrayDesc() {
     ad.inputs.clear();
     for (auto& [_, a] : input_map) {
       bool is_deletable =
-          (a.array_desc_.use_count() <= a.siblings().size() + 1);
+          (static_cast<size_t>(a.array_desc_.use_count()) <= a.siblings().size() + 1);
       // An array with siblings is deletable only if all of its siblings
       // are deletable
       for (auto& s : a.siblings()) {
@@ -283,7 +283,7 @@ array::ArrayDesc::~ArrayDesc() {
         }
         int is_input = (input_map.find(s.id()) != input_map.end());
         is_deletable &=
-            s.array_desc_.use_count() <= a.siblings().size() + is_input;
+            static_cast<size_t>(s.array_desc_.use_count()) <= a.siblings().size() + is_input;
       }
       if (is_deletable) {
         for_deletion.push_back(std::move(a.array_desc_));

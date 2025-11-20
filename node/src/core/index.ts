@@ -1,9 +1,9 @@
 import MLXArray, {
   array,
   zeros,
-  zeros_like,
+  zerosLike,
   ones,
-  ones_like,
+  onesLike,
   full,
   type ArrayElement,
 } from './array';
@@ -86,11 +86,11 @@ import {
   divide,
   power,
   equal,
-  not_equal,
+  notEqual,
   less,
-  less_equal,
+  lessEqual,
   greater,
-  greater_equal,
+  greaterEqual,
   maximum,
   minimum,
   type ReshapeOptions,
@@ -124,7 +124,7 @@ export type {
   UnaryOpOptions,
 } from './ops';
 export { MLXArray, MLXArray as Array, array };
-export { zeros, zeros_like, ones, ones_like, full };
+export { zeros, zerosLike, ones, onesLike, full };
 export { deviceModule as device };
 export {
   MLXStream as Stream,
@@ -147,11 +147,11 @@ export {
   divide,
   power,
   equal,
-  not_equal,
+  notEqual,
   less,
-  less_equal,
+  lessEqual,
   greater,
-  greater_equal,
+  greaterEqual,
   maximum,
   minimum,
   where,
@@ -212,9 +212,9 @@ export {
 const core = {
   array,
   zeros,
-  zeros_like,
+  zerosLike,
   ones,
-  ones_like,
+  onesLike,
   full,
   arange,
   Array: MLXArray,
@@ -236,11 +236,11 @@ const core = {
   divide,
   power,
   equal,
-  not_equal,
+  notEqual,
   less,
-  less_equal,
+  lessEqual,
   greater,
-  greater_equal,
+  greaterEqual,
   maximum,
   minimum,
   where,

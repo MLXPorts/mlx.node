@@ -1,7 +1,21 @@
 import addon from '../internal/addon';
-import type { DTypeKey } from './dtype';
+import type { DTypeKey, MLXDtype } from './dtype';
+import * as dtypeModule from './dtype';
 
 export type DType = DTypeKey;
+export type DTypeLike = MLXDtype | DType;
+
+// Helper to convert DTypeLike to MLXDtype object for native calls
+function toDtype(dtype: DTypeLike | undefined): MLXDtype | undefined {
+  if (dtype === undefined) {
+    return undefined;
+  }
+  if (typeof dtype === 'string') {
+    // Convert string key to MLXDtype object
+    return (dtypeModule as any)[dtype] as MLXDtype;
+  }
+  return dtype;
+}
 
 type NumericArray = readonly (number | bigint)[];
 type SupportedTypedArray =
@@ -274,9 +288,13 @@ export class MLXArray {
 export function array(
   data: SupportedTypedArray | NumericArray,
   shape: readonly number[],
-  dtype: DType = 'float32',
+  dtype?: DTypeLike,
 ): MLXArray {
-  return MLXArray.from(data, shape, dtype);
+  // For now, MLXArray.from still uses DType strings internally
+  // Convert to string key for internal API
+  const dtypeObj = toDtype(dtype);
+  const dtypeKey = dtypeObj ? (dtypeObj.key as DType) : 'float32';
+  return MLXArray.from(data, shape, dtypeKey);
 }
 
 export const normalizeShapeInput = (shape: readonly number[]): number[] =>
@@ -289,54 +307,57 @@ export const normalizeShapeInput = (shape: readonly number[]): number[] =>
 
 export function zeros(
   shape: readonly number[],
-  dtype: DType = 'float32',
+  dtype?: DTypeLike,
 ): MLXArray {
-  return MLXArray.fromHandle(addon.zeros(normalizeShapeInput(shape), dtype));
+  const args: any[] = [normalizeShapeInput(shape)];
+  const dtypeObj = toDtype(dtype);
+  if (dtypeObj !== undefined) {
+    args.push(dtypeObj);
+  }
+  return MLXArray.fromHandle(addon.zeros(...args));
 }
 
 export function ones(
   shape: readonly number[],
-  dtype: DType = 'float32',
+  dtype?: DTypeLike,
 ): MLXArray {
-  return MLXArray.fromHandle(addon.ones(normalizeShapeInput(shape), dtype));
+  const args: any[] = [normalizeShapeInput(shape)];
+  const dtypeObj = toDtype(dtype);
+  if (dtypeObj !== undefined) {
+    args.push(dtypeObj);
+  }
+  return MLXArray.fromHandle(addon.ones(...args));
 }
 
 export function full(
   shape: readonly number[],
   value: number | SupportedTypedArray | MLXArray,
-  dtype?: DType,
+  dtype?: DTypeLike,
 ): MLXArray {
   const normalizedShape = normalizeShapeInput(shape);
+  const args: any[] = [normalizedShape];
 
   if (value instanceof MLXArray) {
-    if (dtype !== undefined) {
-      return MLXArray.fromHandle(
-        addon.full(normalizedShape, value.toNative(), dtype),
-      );
-    }
-    return MLXArray.fromHandle(addon.full(normalizedShape, value.toNative()));
+    args.push(value.toNative());
+  } else if (isTypedArray(value)) {
+    args.push(value);
+  } else {
+    args.push(value as number);
   }
 
-  if (isTypedArray(value)) {
-    if (dtype !== undefined) {
-      return MLXArray.fromHandle(addon.full(normalizedShape, value, dtype));
-    }
-    return MLXArray.fromHandle(addon.full(normalizedShape, value));
+  const dtypeObj = toDtype(dtype);
+  if (dtypeObj !== undefined) {
+    args.push(dtypeObj);
   }
 
-  if (dtype !== undefined) {
-    return MLXArray.fromHandle(
-      addon.full(normalizedShape, value as number, dtype),
-    );
-  }
-  return MLXArray.fromHandle(addon.full(normalizedShape, value as number));
+  return MLXArray.fromHandle(addon.full(...args));
 }
 
-export function zeros_like(base: MLXArray): MLXArray {
+export function zerosLike(base: MLXArray): MLXArray {
   return MLXArray.fromHandle(addon.zeros_like(base.toNative()));
 }
 
-export function ones_like(base: MLXArray): MLXArray {
+export function onesLike(base: MLXArray): MLXArray {
   return MLXArray.fromHandle(addon.ones_like(base.toNative()));
 }
 

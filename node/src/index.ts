@@ -5,96 +5,26 @@ import * as streaming from './streaming';
 import * as react from './react';
 import * as optimizers from './optimizers';
 
+// Native addon utilities
 export const native = {
   hello: (): string => addon.hello(),
 };
 
+// Export namespaces for organized access
 export { core, utils, streaming, react, optimizers };
-export const array = core.array;
-export const Array = core.Array;
-export const Stream = core.Stream;
-export const issubdtype = core.issubdtype;
-export const zeros = core.zeros;
-export const zeros_like = core.zeros_like;
-export const ones = core.ones;
-export const ones_like = core.ones_like;
-export const full = core.full;
-export const defaultStream = core.defaultStream;
-export const newStream = core.newStream;
-export const setDefaultStream = core.setDefaultStream;
-export const synchronize = core.synchronize;
-export const streamContext = core.streamContext;
-export const stream = core.stream;
-export const withStream = core.withStream;
-export const device = core.device;
-export const reshape = core.reshape;
-export const transpose = core.transpose;
-export const moveaxis = core.moveaxis;
-export const swapaxes = core.swapaxes;
-export const add = core.add;
-export const multiply = core.multiply;
-export const subtract = core.subtract;
-export const divide = core.divide;
-export const power = core.power;
-export const equal = core.equal;
-export const not_equal = core.not_equal;
-export const less = core.less;
-export const less_equal = core.less_equal;
-export const greater = core.greater;
-export const greater_equal = core.greater_equal;
-export const maximum = core.maximum;
-export const minimum = core.minimum;
-export const where = core.where;
-export const arange = core.arange;
-export const tan = core.tan;
-export const sin = core.sin;
-export const cos = core.cos;
-export const arcsin = core.arcsin;
-export const arccos = core.arccos;
-export const arctan = core.arctan;
-export const arctan2 = core.arctan2;
-export const rsqrt = core.rsqrt;
-export const square = core.square;
-export const sign = core.sign;
-export const abs = core.abs;
-export const sqrt = core.sqrt;
-export const exp = core.exp;
-export const log = core.log;
 
-// Export dtype constants
-export const bool = core.bool;
-export const int8 = core.int8;
-export const int16 = core.int16;
-export const int32 = core.int32;
-export const int64 = core.int64;
-export const uint8 = core.uint8;
-export const uint16 = core.uint16;
-export const uint32 = core.uint32;
-export const uint64 = core.uint64;
-export const float16 = core.float16;
-export const bfloat16 = core.bfloat16;
-export const float32 = core.float32;
-export const float64 = core.float64;
-export const complex64 = core.complex64;
-
-export default {
-  native,
-  core,
-  utils,
-  react,
-  streaming,
-  optimizers,
-  device,
+// Convenience re-exports from core (TypeScript idiomatic style)
+// Usage: import { array, zeros } from 'mlx';
+export const {
   array,
   Array,
+  Stream,
   issubdtype,
   zeros,
-  zeros_like,
+  zerosLike,
   ones,
-  ones_like,
+  onesLike,
   full,
-  arange,
-  Stream,
   defaultStream,
   newStream,
   setDefaultStream,
@@ -102,6 +32,7 @@ export default {
   streamContext,
   stream,
   withStream,
+  device,
   reshape,
   transpose,
   moveaxis,
@@ -112,14 +43,15 @@ export default {
   divide,
   power,
   equal,
-  not_equal,
+  notEqual,
   less,
-  less_equal,
+  lessEqual,
   greater,
-  greater_equal,
+  greaterEqual,
   maximum,
   minimum,
   where,
+  arange,
   tan,
   sin,
   cos,
@@ -134,6 +66,7 @@ export default {
   sqrt,
   exp,
   log,
+  // DType constants
   bool,
   int8,
   int16,
@@ -148,4 +81,4 @@ export default {
   float32,
   float64,
   complex64,
-};
+} = core;
